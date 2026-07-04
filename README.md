@@ -1,6 +1,11 @@
 # Tabler Icons for Craft CMS
 
+[![Stable Version](https://img.shields.io/packagist/v/bensomething/craft-tabler-icons?label=stable)](https://packagist.org/packages/bensomething/craft-tabler-icons)
+[![Total Downloads](https://img.shields.io/packagist/dt/bensomething/craft-tabler-icons)](https://packagist.org/packages/bensomething/craft-tabler-icons)
+
 A field type for selecting a [Tabler icon](https://tabler.io/icons) from a searchable picker, and rendering any icon as inline SVG in your templates.
+
+![The Tabler icon picker, filtered to the Buildings category](resources/tabler-icons-1.png)
 
 - 5,000+ outline icons and 1,000+ filled icons (Tabler Icons v3.44), bundled with the plugin
 - Searchable by name, tags, and category, with outline/filled tabs
@@ -28,11 +33,11 @@ Or install from the control panel: **Settings → Plugins**.
 
 ### Package Size
 
-The full Tabler icon set is bundled with the plugin, which makes it around 25MB on disk (roughly 3MB compressed for the actual download). In return, everything works offline. The picker, search, and SVG rendering make no CDN or API calls, icons can never change or disappear underneath your content, and front-end rendering is a local file read rather than an HTTP request.
+The full Tabler icon set is bundled with the plugin, which makes it around 25MB on disk (roughly 4MB compressed for the actual download). In return, everything works offline. The picker, search, and SVG rendering make no CDN or API calls, icons can never change or disappear underneath your content, and front-end rendering is a local file read rather than an HTTP request.
 
 ## The Field
 
-Create a field of type **Tabler Icon** and add it to a field layout. Authors get a **Choose icon** button that opens a searchable icon grid.
+Create a field of type **Tabler Icon** and add it to a field layout. Authors get a **Choose** button that opens a searchable icon grid with a category filter; once an icon is selected, clicking its preview reopens the picker.
 
 **Field settings** — *Icon Style* controls whether authors can pick from both styles, outline only, or filled only. Selecting **Outline and filled** will display **Outline** and **Filled** tabs in the icon picker.
 
