@@ -27,7 +27,7 @@
     "extra": {
         "handle": "tabler",
         "name": "Tabler Icons",
-        "developer": "Ben",
+        "developer": "Ben Smith",
         "developerUrl": "https://bensomething.com",
         "class": "bensomething\\tabler\\Plugin"
     },

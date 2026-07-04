@@ -1,5 +1,9 @@
 # Release Notes for Tabler Icons
 
+## 1.4.1 - 2026-07-04
+
+- Package metadata tidy-up for the Plugin Store (license file, developer name)
+
 ## 1.4.0 - 2026-07-04
 
 - Added a category dropdown to the icon picker, combinable with search and the outline/filled tabs
