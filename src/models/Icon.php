@@ -2,6 +2,7 @@
 
 namespace bensomething\tabler\models;
 
+use Craft;
 use craft\helpers\Html;
 use craft\web\twig\SafeHtml;
 use Twig\Markup;
@@ -14,6 +15,8 @@ class Icon implements \JsonSerializable, \Stringable, SafeHtml
     public const VARIANT_OUTLINE = 'outline';
     public const VARIANT_FILLED = 'filled';
 
+    private static ?array $svgDefaults = null;
+
     public function __construct(
         public string $name,
         public string $variant = self::VARIANT_OUTLINE,
@@ -25,6 +28,10 @@ class Icon implements \JsonSerializable, \Stringable, SafeHtml
      *
      * Supported attributes: `size` (sets width + height), plus any HTML
      * attribute (`class`, `width`, `height`, `stroke-width`, `aria-label`, …).
+     *
+     * Site-wide defaults can be set via `svgDefaults` in `config/tabler.php`.
+     * Per-call attributes override defaults, except `class`, which is combined.
+     * Pass `defaults: false` to skip the configured defaults for one call.
      */
     public function svg(array $attributes = []): Markup
     {
@@ -34,17 +41,14 @@ class Icon implements \JsonSerializable, \Stringable, SafeHtml
             return new Markup('', 'UTF-8');
         }
 
+        $attributes = self::normalizeStrokeWidth($attributes);
+        $attributes = self::mergeSvgDefaults($attributes);
+
         if (isset($attributes['size'])) {
             $size = $attributes['size'];
             unset($attributes['size']);
             $attributes['width'] = $attributes['width'] ?? $size;
             $attributes['height'] = $attributes['height'] ?? $size;
-        }
-
-        // Unquoted-friendly alias for 'stroke-width'
-        if (isset($attributes['strokeWidth'])) {
-            $attributes['stroke-width'] = $attributes['stroke-width'] ?? $attributes['strokeWidth'];
-            unset($attributes['strokeWidth']);
         }
 
         // Default to a hidden decorative icon unless a label is provided
@@ -57,6 +61,53 @@ class Icon implements \JsonSerializable, \Stringable, SafeHtml
         }
 
         return new Markup($contents, 'UTF-8');
+    }
+
+    /**
+     * Converts the unquoted-friendly `strokeWidth` alias to 'stroke-width'.
+     */
+    private static function normalizeStrokeWidth(array $attributes): array
+    {
+        if (isset($attributes['strokeWidth'])) {
+            $attributes['stroke-width'] = $attributes['stroke-width'] ?? $attributes['strokeWidth'];
+            unset($attributes['strokeWidth']);
+        }
+
+        return $attributes;
+    }
+
+    /**
+     * Merges the configured `svgDefaults` under the given attributes.
+     * Call-time attributes win per key; `class` values are combined.
+     */
+    private static function mergeSvgDefaults(array $attributes): array
+    {
+        $skipDefaults = ($attributes['defaults'] ?? true) === false;
+        unset($attributes['defaults']);
+
+        if ($skipDefaults) {
+            return $attributes;
+        }
+
+        if (self::$svgDefaults === null) {
+            self::$svgDefaults = self::normalizeStrokeWidth(
+                Craft::$app->getConfig()->getConfigFromFile('tabler')['svgDefaults'] ?? []
+            );
+        }
+
+        if (!self::$svgDefaults) {
+            return $attributes;
+        }
+
+        $defaults = self::$svgDefaults;
+
+        if (isset($defaults['class'], $attributes['class'])) {
+            $attributes['class'] = trim(
+                implode(' ', (array)$defaults['class']) . ' ' . implode(' ', (array)$attributes['class'])
+            );
+        }
+
+        return $attributes + $defaults;
     }
 
     /**

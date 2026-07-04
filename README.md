@@ -61,6 +61,31 @@ The field value is `null` or an Icon object:
 
 Icons inherit `currentColor`, so they take the CSS text colour of their parent. SVGs render with `aria-hidden="true"` by default. Pass an `aria-label` for icons that carry meaning.
 
+### Default Attributes
+
+Set site-wide SVG defaults in a `config/tabler.php` file in your project:
+
+```php
+<?php
+
+return [
+    'svgDefaults' => [
+        'class' => 'text-highlight',
+        'stroke-width' => 1.5,
+        'stroke-linecap' => 'square',
+        'stroke-linejoin' => 'bevel',
+    ],
+];
+```
+
+Every `svg()` call (and bare icon output) starts from these. Per-call attributes override defaults, except `class`, which is combined:
+
+```twig
+{{ item.icon.svg({ class: 'size-8 mb-2' }) }}   {# class="… text-highlight size-8 mb-2" stroke-width="1.5" … #}
+{{ item.icon.svg({ strokeWidth: 2.5 }) }}       {# overrides the configured stroke-width #}
+{{ item.icon.svg({ defaults: false }) }}        {# skips the configured defaults entirely #}
+```
+
 ### Manual Icons (No Field)
 
 The `tabler()` Twig function returns the same Icon object for any icon name:
