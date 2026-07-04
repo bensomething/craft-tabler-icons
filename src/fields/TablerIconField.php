@@ -137,7 +137,6 @@ class TablerIconField extends Field implements PreviewableFieldInterface
             'id' => $id,
             'name' => $this->handle,
             'value' => $value,
-            'removeIcon' => new Icon('x'),
         ]);
     }
 

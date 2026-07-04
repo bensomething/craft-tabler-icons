@@ -52,6 +52,7 @@
             this.results = [];
             this.rendered = 0;
             this.variantFilter = 'all';
+            this.categoryFilter = '';
 
             this.chooseBtn.addEventListener('click', () => this.open());
             this.removeBtn.addEventListener('click', () => this.clear());
@@ -71,6 +72,7 @@
 
             loadIndex(this.config.indexUrl).then((icons) => {
                 this.entries = this.buildEntries(icons);
+                this.populateCategories(icons);
                 this.search('');
                 this.searchInput.focus();
             }).catch(() => {
@@ -85,14 +87,27 @@
             for (const icon of icons) {
                 const haystack = (icon.n + ' ' + icon.t).toLowerCase();
                 if (style !== 'filled') {
-                    entries.push({name: icon.n, variant: 'outline', code: icon.o, haystack: haystack});
+                    entries.push({name: icon.n, variant: 'outline', code: icon.o, cat: icon.c, haystack: haystack});
                 }
                 if (style !== 'outline' && icon.f) {
-                    entries.push({name: icon.n, variant: 'filled', code: icon.f, haystack: haystack});
+                    entries.push({name: icon.n, variant: 'filled', code: icon.f, cat: icon.c, haystack: haystack});
                 }
             }
 
             return entries;
+        }
+
+        populateCategories(icons) {
+            if (this.catSelect.options.length > 1) {
+                return;
+            }
+            const cats = [...new Set(icons.map((icon) => icon.c).filter(Boolean))].sort();
+            for (const cat of cats) {
+                const option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                this.catSelect.appendChild(option);
+            }
         }
 
         buildModal() {
@@ -104,8 +119,19 @@
                     '<div class="texticon search icon clearable fullwidth">' +
                         '<input class="text fullwidth" type="text" autocomplete="off" placeholder="' + Craft.t('tabler', 'Search icons') + '">' +
                     '</div>' +
+                    '<div class="select tabler-icon-modal__cats">' +
+                        '<select aria-label="' + Craft.t('tabler', 'Category') + '">' +
+                            '<option value="">' + Craft.t('tabler', 'All categories') + '</option>' +
+                        '</select>' +
+                    '</div>' +
                 '</div>'
             ).appendTo($wrap);
+
+            this.catSelect = header.find('select')[0];
+            this.catSelect.addEventListener('change', () => {
+                this.categoryFilter = this.catSelect.value;
+                this.search(this.searchInput.value);
+            });
 
             if (this.config.style === 'all') {
                 this.variantFilter = 'outline';
@@ -164,6 +190,9 @@
 
             this.results = this.entries.filter((entry) => {
                 if (this.variantFilter !== 'all' && entry.variant !== this.variantFilter) {
+                    return false;
+                }
+                if (this.categoryFilter && entry.cat !== this.categoryFilter) {
                     return false;
                 }
                 return words.every((word) => entry.haystack.includes(word));

@@ -10,7 +10,5 @@
     </button>
 
     <button type="button" class="btn{% if value %} hidden{% endif %}" data-choose>{{ 'Choose'|t('tabler') }}</button>
-    <button type="button" class="btn tabler-icon-field__iconbtn{% if not value %} hidden{% endif %}" data-remove aria-label="{{ 'Remove'|t('tabler') }}" title="{{ 'Remove'|t('tabler') }}">
-        <span class="tabler-icon-field__btnicon" aria-hidden="true">{{ removeIcon.svg({ size: 20, defaults: false }) }}</span>
-    </button>
+    <button type="button" class="btn{% if not value %} hidden{% endif %}" data-remove>{{ 'Remove'|t('tabler') }}</button>
 </div>

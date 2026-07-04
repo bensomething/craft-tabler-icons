@@ -67,26 +67,6 @@
 .tabler-icon-field .icon-picker--icon svg [fill='currentColor'] {
     fill: currentColor;
 }
-
-/* Square icon-only action buttons (Change / Remove), sized like the preview box */
-.tabler-icon-field__iconbtn {
-    width: var(--ui-control-height, 34px);
-    height: var(--ui-control-height, 34px);
-    padding: 0;
-    flex-shrink: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.tabler-icon-field__btnicon {
-    display: inline-flex;
-}
-
-.tabler-icon-field__btnicon[hidden] {
-    display: none;
-}
-
 .tabler-icon-field__btnicon svg {
     display: block;
     width: 20px;
@@ -128,7 +108,8 @@
     flex: 1;
 }
 
-.tabler-icon-modal__filters {
+.tabler-icon-modal__filters,
+.tabler-icon-modal__cats {
     flex-shrink: 0;
 }
 

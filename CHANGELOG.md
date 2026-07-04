@@ -1,5 +1,10 @@
 # Release Notes for Tabler Icons
 
+## 1.4.0 - 2026-07-04
+
+- Added a category dropdown to the icon picker, combinable with search and the outline/filled tabs
+- The field’s Remove button is a text button again; changing the icon is done via the preview box
+
 ## 1.3.0 - 2026-07-04
 
 - Compact field input: the preview box itself opens the picker (click or keyboard), the Choose button only shows while the field is empty, and Remove is a square x icon button
