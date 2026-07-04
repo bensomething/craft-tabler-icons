@@ -94,6 +94,13 @@ The `tabler()` Twig function returns the same Icon object for any icon name:
 {{ tabler('map-pin') }}
 {{ tabler('map-pin').svg({ size: 20, class: 'list-icon' }) }}
 {{ tabler('heart', 'filled').svg({ size: 20 }) }}
+{{ tabler('heart-filled') }}   {# '-filled' suffix also selects the filled variant #}
+```
+
+`tabler()` also accepts an existing Icon object (e.g. a field value) and returns it unchanged — handy for partials that take either a name or a field value:
+
+```twig
+{{ tabler(item.myIcon ?? 'star').svg({ size: 20 }) }}
 ```
 
 Unknown icon names render as an empty string.

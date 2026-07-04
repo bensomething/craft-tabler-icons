@@ -43,9 +43,7 @@
             this.config = config;
             this.nameInput = this.container.querySelector('[data-name]');
             this.variantInput = this.container.querySelector('[data-variant]');
-            this.selectionEl = this.container.querySelector('[data-selection]');
             this.previewEl = this.container.querySelector('[data-preview]');
-            this.labelEl = this.container.querySelector('[data-label]');
             this.chooseBtn = this.container.querySelector('[data-choose]');
             this.removeBtn = this.container.querySelector('[data-remove]');
 
@@ -222,10 +220,11 @@
 
             this.previewEl.innerHTML = '';
             this.previewEl.appendChild(glyph(code, variant));
-            this.labelEl.textContent = label(name, variant);
-            this.selectionEl.classList.remove('hidden');
+            this.previewEl.setAttribute('role', 'img');
+            this.previewEl.setAttribute('title', label(name, variant));
+            this.previewEl.setAttribute('aria-label', label(name, variant));
             this.removeBtn.classList.remove('hidden');
-            this.chooseBtn.textContent = Craft.t('tabler', 'Change icon');
+            this.chooseBtn.textContent = Craft.t('tabler', 'Change');
 
             this.modal.hide();
         }
@@ -236,10 +235,11 @@
             this.nameInput.dispatchEvent(new Event('change', {bubbles: true}));
 
             this.previewEl.innerHTML = '';
-            this.labelEl.textContent = '';
-            this.selectionEl.classList.add('hidden');
+            this.previewEl.removeAttribute('role');
+            this.previewEl.removeAttribute('title');
+            this.previewEl.removeAttribute('aria-label');
             this.removeBtn.classList.add('hidden');
-            this.chooseBtn.textContent = Craft.t('tabler', 'Choose icon');
+            this.chooseBtn.textContent = Craft.t('tabler', 'Choose');
         }
     }
 

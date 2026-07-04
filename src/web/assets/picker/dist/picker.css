@@ -36,40 +36,16 @@
     font-family: 'tabler-icons-filled';
 }
 
-/* Field input */
+/* Field input — reuses Craft's native .icon-picker chrome */
 
-.tabler-icon-field {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.tabler-icon-field__selection {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 10px;
-    border-radius: var(--medium-border-radius, 5px);
-    background-color: var(--gray-050, #f3f7fc);
-}
-
-.tabler-icon-field__preview {
-    display: inline-flex;
-    align-items: center;
-}
-
-.tabler-icon-field__preview .tabler-glyph {
-    font-size: 22px;
-}
-
-.tabler-icon-field__preview svg {
+.tabler-icon-field .icon-picker--icon svg {
     display: block;
+    width: 20px;
+    height: 20px;
 }
 
-.tabler-icon-field__buttons {
-    display: inline-flex;
-    gap: 6px;
+.tabler-icon-field .icon-picker--icon .tabler-glyph {
+    font-size: 20px;
 }
 
 /* Picker modal */
