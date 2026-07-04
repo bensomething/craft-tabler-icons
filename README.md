@@ -1,11 +1,6 @@
 # Tabler Icons for Craft CMS
 
-[![Stable Version](https://img.shields.io/packagist/v/bensomething/craft-tabler-icons?label=stable)](https://packagist.org/packages/bensomething/craft-tabler-icons)
-[![Total Downloads](https://img.shields.io/packagist/dt/bensomething/craft-tabler-icons)](https://packagist.org/packages/bensomething/craft-tabler-icons)
-
 A field type for selecting a [Tabler icon](https://tabler.io/icons) from a searchable picker, and rendering any icon as inline SVG in your templates.
-
-![The Tabler icon picker, filtered to the Buildings category](resources/tabler-icons-1.png)
 
 - 5,000+ outline icons and 1,000+ filled icons (Tabler Icons v3.44), bundled with the plugin
 - Searchable by name, tags, and category, with outline/filled tabs
@@ -129,3 +124,8 @@ If you load the Tabler webfont on the front end yourself, `classes()` gives you 
 ## License
 
 This plugin is MIT-licensed. Tabler Icons are © [Paweł Kuna](https://github.com/tabler/tabler-icons), also MIT-licensed (see `LICENSE-tabler`).
+
+![The Tabler icon picker, filtered to the Buildings category](resources/tabler-icons-1.png)
+
+[![Stable Version](https://img.shields.io/packagist/v/bensomething/craft-tabler-icons?label=stable)](https://packagist.org/packages/bensomething/craft-tabler-icons)
+[![Total Downloads](https://img.shields.io/packagist/dt/bensomething/craft-tabler-icons)](https://packagist.org/packages/bensomething/craft-tabler-icons)
