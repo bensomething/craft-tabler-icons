@@ -55,6 +55,9 @@
 
             this.chooseBtn.addEventListener('click', () => this.open());
             this.removeBtn.addEventListener('click', () => this.clear());
+            // The preview box is a redundant click target; the Choose/Change
+            // button remains the keyboard-accessible path.
+            this.previewEl.addEventListener('click', () => this.open());
         }
 
         open() {
@@ -220,11 +223,10 @@
 
             this.previewEl.innerHTML = '';
             this.previewEl.appendChild(glyph(code, variant));
-            this.previewEl.setAttribute('role', 'img');
             this.previewEl.setAttribute('title', label(name, variant));
-            this.previewEl.setAttribute('aria-label', label(name, variant));
+            this.previewEl.setAttribute('aria-label', Craft.t('tabler', 'Change icon: {label}', {label: label(name, variant)}));
+            this.chooseBtn.classList.add('hidden');
             this.removeBtn.classList.remove('hidden');
-            this.chooseBtn.textContent = Craft.t('tabler', 'Change');
 
             this.modal.hide();
         }
@@ -235,11 +237,10 @@
             this.nameInput.dispatchEvent(new Event('change', {bubbles: true}));
 
             this.previewEl.innerHTML = '';
-            this.previewEl.removeAttribute('role');
-            this.previewEl.removeAttribute('title');
-            this.previewEl.removeAttribute('aria-label');
+            this.previewEl.setAttribute('title', Craft.t('tabler', 'Choose icon'));
+            this.previewEl.setAttribute('aria-label', Craft.t('tabler', 'Choose icon'));
+            this.chooseBtn.classList.remove('hidden');
             this.removeBtn.classList.add('hidden');
-            this.chooseBtn.textContent = Craft.t('tabler', 'Choose');
         }
     }
 

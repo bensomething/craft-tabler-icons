@@ -1,5 +1,11 @@
 # Release Notes for Tabler Icons
 
+## 1.3.0 - 2026-07-04
+
+- Compact field input: the preview box itself opens the picker (click or keyboard), the Choose button only shows while the field is empty, and Remove is a square x icon button
+- Fixed the field preview rendering as a solid square (Craft’s CP force-fills SVG shapes inside the icon box)
+- Fixed the icon preview box shrinking in narrow layouts
+
 ## 1.2.0 - 2026-07-04
 
 - Restyled the field input to match Craft’s native Icon field (icon box + Choose/Change/Remove buttons)

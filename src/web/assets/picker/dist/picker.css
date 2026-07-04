@@ -38,7 +38,56 @@
 
 /* Field input — reuses Craft's native .icon-picker chrome */
 
+/* The preview box is a <button>; keep it looking like the native box */
+.tabler-icon-field .icon-picker--icon {
+    flex-shrink: 0;
+    cursor: pointer;
+    padding: 0;
+    appearance: none;
+}
+
 .tabler-icon-field .icon-picker--icon svg {
+    display: block;
+    width: 20px;
+    height: 20px;
+}
+
+/* cp.css force-fills shapes inside .icon-picker--icon (built for Craft's solid
+   app icons), which fills Tabler's invisible bounding path and zeroes strokes.
+   Restore the SVGs' own attribute-driven styling. */
+.tabler-icon-field .icon-picker--icon svg :is(circle, ellipse, line, path, polygon, polyline, rect, text) {
+    fill: inherit;
+    stroke-width: inherit;
+}
+
+.tabler-icon-field .icon-picker--icon svg [fill='none'] {
+    fill: none;
+}
+
+.tabler-icon-field .icon-picker--icon svg [fill='currentColor'] {
+    fill: currentColor;
+}
+
+/* Square icon-only action buttons (Change / Remove), sized like the preview box */
+.tabler-icon-field__iconbtn {
+    width: var(--ui-control-height, 34px);
+    height: var(--ui-control-height, 34px);
+    padding: 0;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tabler-icon-field__btnicon {
+    display: inline-flex;
+}
+
+.tabler-icon-field__btnicon[hidden] {
+    display: none;
+}
+
+.tabler-icon-field__btnicon svg {
     display: block;
     width: 20px;
     height: 20px;

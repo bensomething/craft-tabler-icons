@@ -2,10 +2,15 @@
     {{ hiddenInput(name ~ '[name]', value.name ?? '', { data: { name: true } }) }}
     {{ hiddenInput(name ~ '[variant]', value.variant ?? '', { data: { variant: true } }) }}
 
-    <div class="icon-picker--icon" data-preview{% if value %} role="img" title="{{ value.label }}" aria-label="{{ value.label }}"{% endif %}>
+    {# The preview box is a real button so changing the icon stays keyboard-accessible #}
+    <button type="button" class="icon-picker--icon" data-preview
+        title="{{ value ? value.label : 'Choose icon'|t('tabler') }}"
+        aria-label="{{ value ? 'Change icon: {label}'|t('tabler', { label: value.label }) : 'Choose icon'|t('tabler') }}">
         {%- if value %}{{ value.svg() }}{% endif -%}
-    </div>
+    </button>
 
-    <button type="button" class="btn" data-choose>{{ (value ? 'Change' : 'Choose')|t('tabler') }}</button>
-    <button type="button" class="btn{% if not value %} hidden{% endif %}" data-remove>{{ 'Remove'|t('tabler') }}</button>
+    <button type="button" class="btn{% if value %} hidden{% endif %}" data-choose>{{ 'Choose'|t('tabler') }}</button>
+    <button type="button" class="btn tabler-icon-field__iconbtn{% if not value %} hidden{% endif %}" data-remove aria-label="{{ 'Remove'|t('tabler') }}" title="{{ 'Remove'|t('tabler') }}">
+        <span class="tabler-icon-field__btnicon" aria-hidden="true">{{ removeIcon.svg({ size: 20, defaults: false }) }}</span>
+    </button>
 </div>

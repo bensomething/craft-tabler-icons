@@ -24,6 +24,13 @@ class TablerIconField extends Field implements PreviewableFieldInterface
      */
     public string $iconStyle = self::STYLE_ALL;
 
+    public function __construct(array $config = [])
+    {
+        // Remove settings that no longer exist
+        unset($config['buttonStyle']);
+        parent::__construct($config);
+    }
+
     public static function displayName(): string
     {
         return Craft::t('tabler', 'Tabler Icon');
@@ -130,6 +137,7 @@ class TablerIconField extends Field implements PreviewableFieldInterface
             'id' => $id,
             'name' => $this->handle,
             'value' => $value,
+            'removeIcon' => new Icon('x'),
         ]);
     }
 
