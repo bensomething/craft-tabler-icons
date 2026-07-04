@@ -1,0 +1,155 @@
+@font-face {
+    font-family: 'tabler-icons';
+    src: url('fonts/tabler-icons.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
+}
+
+/* Lighter stroke (1.5px on the 24px design grid) for large glyphs */
+@font-face {
+    font-family: 'tabler-icons';
+    src: url('fonts/tabler-icons-300.woff2') format('woff2');
+    font-weight: 300;
+    font-style: normal;
+    font-display: block;
+}
+@font-face {
+    font-family: 'tabler-icons-filled';
+    src: url('fonts/tabler-icons-filled.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
+}
+
+.tabler-glyph {
+    font-family: 'tabler-icons';
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    speak: never;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.tabler-glyph--filled {
+    font-family: 'tabler-icons-filled';
+}
+
+/* Field input */
+
+.tabler-icon-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.tabler-icon-field__selection {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: var(--medium-border-radius, 5px);
+    background-color: var(--gray-050, #f3f7fc);
+}
+
+.tabler-icon-field__preview {
+    display: inline-flex;
+    align-items: center;
+}
+
+.tabler-icon-field__preview .tabler-glyph {
+    font-size: 22px;
+}
+
+.tabler-icon-field__preview svg {
+    display: block;
+}
+
+.tabler-icon-field__buttons {
+    display: inline-flex;
+    gap: 6px;
+}
+
+/* Picker modal */
+
+.modal.tabler-icon-modal {
+    width: 720px;
+    max-width: calc(100vw - 40px);
+    height: 600px;
+    max-height: calc(100vh - 100px);
+    padding: 0;
+}
+
+/* Garnish sets an inline display on the modal itself, so the flex layout
+   lives on an inner wrapper it never touches */
+.tabler-icon-modal__wrap {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.tabler-icon-modal__header {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    gap: 12px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--hairline-color, #e3e5e8);
+}
+
+.tabler-icon-modal__header .texticon {
+    flex: 1;
+}
+
+.tabler-icon-modal__filters {
+    flex-shrink: 0;
+}
+
+.tabler-icon-modal__body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 16px 20px;
+}
+
+.tabler-icon-modal__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+    gap: 4px;
+}
+
+.tabler-icon-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1;
+    border: 1px solid transparent;
+    border-radius: var(--medium-border-radius, 5px);
+    background: transparent;
+    cursor: pointer;
+    color: var(--text-color, #172c40);
+}
+
+.tabler-icon-cell .tabler-glyph {
+    font-size: 34px;
+    font-weight: 300;
+}
+
+.tabler-icon-cell:hover {
+    background-color: var(--gray-050, #f3f7fc);
+    border-color: var(--hairline-color, #e3e5e8);
+}
+
+.tabler-icon-cell--selected,
+.tabler-icon-cell--selected:hover {
+    background-color: var(--light-sel-color, #cdd8e4);
+    border-color: transparent;
+}
+
+.tabler-icon-modal__footer {
+    flex-shrink: 0;
+    padding: 10px 20px;
+    border-top: 1px solid var(--hairline-color, #e3e5e8);
+}

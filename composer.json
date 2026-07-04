@@ -1,0 +1,40 @@
+{
+    "name": "bensomething/craft-tabler-icons",
+    "description": "Tabler icon picker field for Craft CMS",
+    "type": "craft-plugin",
+    "license": "MIT",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "plugin",
+        "icons",
+        "tabler"
+    ],
+    "support": {
+        "issues": "https://github.com/bensomething/craft-tabler-icons/issues",
+        "source": "https://github.com/bensomething/craft-tabler-icons"
+    },
+    "require": {
+        "php": "^8.2",
+        "craftcms/cms": "^5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "bensomething\\tabler\\": "src/"
+        }
+    },
+    "extra": {
+        "handle": "tabler",
+        "name": "Tabler Icons",
+        "developer": "Ben",
+        "developerUrl": "https://bensomething.com",
+        "class": "bensomething\\tabler\\Plugin"
+    },
+    "config": {
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true,
+            "craftcms/plugin-installer": true
+        }
+    }
+}

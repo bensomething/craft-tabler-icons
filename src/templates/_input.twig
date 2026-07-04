@@ -1,0 +1,14 @@
+<div id="{{ id }}" class="tabler-icon-field">
+    {{ hiddenInput(name ~ '[name]', value.name ?? '', { data: { name: true } }) }}
+    {{ hiddenInput(name ~ '[variant]', value.variant ?? '', { data: { variant: true } }) }}
+
+    <div class="tabler-icon-field__selection{% if not value %} hidden{% endif %}" data-selection>
+        <span class="tabler-icon-field__preview" data-preview>{% if value %}{{ value.svg({ size: 22 }) }}{% endif %}</span>
+        <span class="tabler-icon-field__label" data-label>{{ value ? value.label : '' }}</span>
+    </div>
+
+    <div class="tabler-icon-field__buttons">
+        <button type="button" class="btn" data-choose>{{ value ? 'Change icon'|t('tabler') : 'Choose icon'|t('tabler') }}</button>
+        <button type="button" class="btn{% if not value %} hidden{% endif %}" data-remove>{{ 'Remove'|t('tabler') }}</button>
+    </div>
+</div>
