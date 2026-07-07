@@ -154,6 +154,11 @@
     border-color: transparent;
 }
 
+.tabler-icon-cell:focus-visible {
+    outline: 2px solid var(--focus-color, #2563eb);
+    outline-offset: -2px;
+}
+
 .tabler-icon-modal__footer {
     flex-shrink: 0;
     padding: 10px 20px;

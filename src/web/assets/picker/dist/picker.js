@@ -178,6 +178,8 @@
                 }
             });
 
+            this.gridEl.addEventListener('keydown', (event) => this.handleGridKeydown(event));
+
             this.modal = new Garnish.Modal($modal);
         }
 
@@ -215,6 +217,53 @@
             });
         }
 
+        // Roving tabindex: arrows move focus around the grid, Tab moves past it.
+        // Cells are real buttons, so Enter/Space select natively.
+        handleGridKeydown(event) {
+            if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) {
+                return;
+            }
+
+            const cells = this.gridEl.children;
+            if (!cells.length) {
+                return;
+            }
+
+            const active = document.activeElement.closest('.tabler-icon-cell');
+            let index = Math.max(0, [].indexOf.call(cells, active));
+            const columns = getComputedStyle(this.gridEl).gridTemplateColumns.split(' ').length;
+
+            switch (event.key) {
+                case 'ArrowRight': index += 1; break;
+                case 'ArrowLeft': index -= 1; break;
+                case 'ArrowDown': index += columns; break;
+                case 'ArrowUp': index -= columns; break;
+                case 'Home': index = 0; break;
+                case 'End': index = this.results.length - 1; break;
+            }
+
+            index = Math.max(0, Math.min(index, this.results.length - 1));
+
+            // The grid renders in chunks; make sure the target cell exists
+            while (index >= this.rendered && this.rendered < this.results.length) {
+                this.renderMore();
+            }
+
+            const target = this.gridEl.children[index];
+            if (!target) {
+                return;
+            }
+
+            event.preventDefault();
+            const previous = this.gridEl.querySelector('[tabindex="0"]');
+            if (previous) {
+                previous.tabIndex = -1;
+            }
+            target.tabIndex = 0;
+            target.focus();
+            target.scrollIntoView({block: 'nearest'});
+        }
+
         renderMore() {
             if (!this.results || this.rendered >= this.results.length) {
                 return;
@@ -234,6 +283,7 @@
                     cell.classList.add('tabler-icon-cell--selected');
                 }
                 cell.title = label(entry.name, entry.variant);
+                cell.tabIndex = -1;
                 cell.dataset.name = entry.name;
                 cell.dataset.variant = entry.variant;
                 cell.dataset.code = entry.code;
@@ -243,6 +293,11 @@
 
             this.rendered = end;
             this.gridEl.appendChild(fragment);
+
+            // Keep one tabbable cell as the grid's Tab entry point
+            if (!this.gridEl.querySelector('[tabindex="0"]')) {
+                this.gridEl.children[0].tabIndex = 0;
+            }
         }
 
         select(name, variant, code) {
