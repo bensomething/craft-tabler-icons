@@ -29,7 +29,9 @@
         "name": "Tabler Icons",
         "developer": "Ben Smith",
         "developerUrl": "https://bensomething.com",
-        "class": "bensomething\\tabler\\Plugin"
+        "class": "bensomething\\tabler\\Plugin",
+        "documentationUrl": "https://github.com/bensomething/craft-tabler-icons",
+        "changelogUrl": "https://raw.githubusercontent.com/bensomething/craft-tabler-icons/develop/CHANGELOG.md"
     },
     "config": {
         "allow-plugins": {

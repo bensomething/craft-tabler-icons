@@ -8,12 +8,13 @@ use Craft;
 use craft\base\ElementInterface;
 use craft\base\Field;
 use craft\base\PreviewableFieldInterface;
+use craft\base\ThumbableFieldInterface;
 use craft\helpers\Cp;
 use craft\helpers\Html;
 use craft\helpers\Json;
 use yii\db\Schema;
 
-class TablerIconField extends Field implements PreviewableFieldInterface
+class TablerIconField extends Field implements PreviewableFieldInterface, ThumbableFieldInterface
 {
     public const STYLE_ALL = 'all';
     public const STYLE_OUTLINE = 'outline';
@@ -138,6 +139,32 @@ class TablerIconField extends Field implements PreviewableFieldInterface
             'name' => $this->handle,
             'value' => $value,
         ]);
+    }
+
+    /**
+     * Lets the field be an entry type’s Thumbnail Source. Returns the raw SVG
+     * (not wrapped in .cp-icon, whose CSS force-fills shapes and would render
+     * outline icons as solid squares).
+     *
+     * Craft requests thumbs at 30 (element chips/index rows) or 120 (cards),
+     * but chip thumb slots are ~22px and get squeezed by surrounding layout.
+     * Inline width/height/flex win over the CP’s `.thumb svg` rules and flex
+     * shrinking, so the icon is always a fixed square.
+     */
+    public function getThumbHtml(mixed $value, ElementInterface $element, int $size): ?string
+    {
+        if (!$value instanceof Icon) {
+            return null;
+        }
+
+        $dim = $size <= 30 ? 22 : $size;
+        $svg = (string)$value->svg([
+            'size' => $dim,
+            'style' => "width:{$dim}px;height:{$dim}px;flex:none",
+            'defaults' => false,
+        ]);
+
+        return $svg !== '' ? $svg : null;
     }
 
     public function getPreviewHtml(mixed $value, ElementInterface $element): string
