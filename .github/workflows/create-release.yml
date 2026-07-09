@@ -6,6 +6,13 @@ on:
     types:
       - craftcms/new-release
 
+# The release detector often dispatches twice in quick succession; queue
+# same-tag runs so the second sees the created release (allowUpdates no-op)
+# instead of racing the first into an already_exists error.
+concurrency:
+  group: create-release-${{ github.event.client_payload.tag }}
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
