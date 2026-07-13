@@ -25,6 +25,12 @@ class TablerIconField extends Field implements PreviewableFieldInterface, Thumba
      */
     public string $iconStyle = self::STYLE_ALL;
 
+    /**
+     * @var bool Show a Random button in the picker that highlights a random
+     * icon from the current results
+     */
+    public bool $showRandomButton = false;
+
     public function __construct(array $config = [])
     {
         // Remove settings that no longer exist
@@ -56,6 +62,7 @@ class TablerIconField extends Field implements PreviewableFieldInterface, Thumba
     {
         $rules = parent::defineRules();
         $rules[] = [['iconStyle'], 'in', 'range' => [self::STYLE_ALL, self::STYLE_OUTLINE, self::STYLE_FILLED]];
+        $rules[] = [['showRandomButton'], 'boolean'];
         return $rules;
     }
 
@@ -128,6 +135,7 @@ class TablerIconField extends Field implements PreviewableFieldInterface, Thumba
         $config = [
             'indexUrl' => $bundle->baseUrl . '/icons.json',
             'style' => $this->iconStyle,
+            'random' => $this->showRandomButton,
         ];
 
         $view->registerJs(
@@ -198,6 +206,12 @@ class TablerIconField extends Field implements PreviewableFieldInterface, Thumba
                 ['label' => Craft::t('tabler', 'Outline only'), 'value' => self::STYLE_OUTLINE],
                 ['label' => Craft::t('tabler', 'Filled only'), 'value' => self::STYLE_FILLED],
             ],
+        ]) . Cp::lightswitchFieldHtml([
+            'label' => Craft::t('tabler', 'Show Random Button'),
+            'instructions' => Craft::t('tabler', 'Adds a button to the picker that highlights a random icon from the current results.'),
+            'id' => 'showRandomButton',
+            'name' => 'showRandomButton',
+            'on' => $this->showRandomButton,
         ]);
     }
 }

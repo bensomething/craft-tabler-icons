@@ -109,8 +109,13 @@
 }
 
 .tabler-icon-modal__filters,
-.tabler-icon-modal__cats {
+.tabler-icon-modal__cats,
+.tabler-icon-modal__random {
     flex-shrink: 0;
+}
+
+.tabler-icon-modal__random .tabler-glyph {
+    font-size: 18px;
 }
 
 .tabler-icon-modal__body {
@@ -143,20 +148,22 @@
     font-weight: 300;
 }
 
-.tabler-icon-cell:hover {
+.tabler-icon-cell:hover,
+.tabler-icon-cell--selected {
     background-color: var(--gray-050, #f3f7fc);
     border-color: var(--hairline-color, #e3e5e8);
 }
 
-.tabler-icon-cell--selected,
-.tabler-icon-cell--selected:hover {
-    background-color: var(--light-sel-color, #cdd8e4);
-    border-color: transparent;
-}
-
-.tabler-icon-cell:focus-visible {
+/* Ring any focused cell (arrow navigation, or a mouse roll from the Random
+   button — Chrome doesn’t propagate :focus-visible through script focus that
+   starts from a mouse click, so plain :focus is required); --rolled mirrors
+   it for keyboard rolls, which highlight without taking focus. Scoped under
+   the modal class to outrank the CP’s `body :focus{outline-color:transparent}`. */
+.tabler-icon-modal .tabler-icon-cell:focus,
+.tabler-icon-modal .tabler-icon-cell--rolled {
     outline: 2px solid var(--focus-color, #2563eb);
     outline-offset: -2px;
+    outline-color: var(--focus-color, #2563eb);
 }
 
 .tabler-icon-modal__footer {

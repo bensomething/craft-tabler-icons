@@ -1,6 +1,6 @@
 {
     "name": "bensomething/craft-tabler-icons",
-    "description": "Tabler icon picker field for Craft CMS",
+    "description": "An icon picker field for Tabler icons.",
     "type": "craft-plugin",
     "license": "MIT",
     "keywords": [

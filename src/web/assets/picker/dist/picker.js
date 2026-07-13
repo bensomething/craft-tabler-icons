@@ -64,6 +64,7 @@
         open() {
             if (this.modal) {
                 this.modal.show();
+                this.scrollToSelected();
                 this.searchInput.focus();
                 return;
             }
@@ -73,7 +74,14 @@
             loadIndex(this.config.indexUrl).then((icons) => {
                 this.entries = this.buildEntries(icons);
                 this.populateCategories(icons);
+                if (this.randomGlyphEl) {
+                    const shuffle = icons.find((icon) => icon.n === 'arrows-shuffle');
+                    if (shuffle) {
+                        this.randomGlyphEl.textContent = String.fromCodePoint(parseInt(shuffle.o, 16));
+                    }
+                }
                 this.search('');
+                this.scrollToSelected();
                 this.searchInput.focus();
             }).catch(() => {
                 this.gridEl.innerHTML = '<p class="error">' + Craft.t('tabler', 'Couldn’t load the icon index.') + '</p>';
@@ -98,15 +106,41 @@
         }
 
         populateCategories(icons) {
-            if (this.catSelect.options.length > 1) {
+            if (this.allCategories) {
                 return;
             }
-            const cats = [...new Set(icons.map((icon) => icon.c).filter(Boolean))].sort();
+            this.allCategories = [...new Set(icons.map((icon) => icon.c).filter(Boolean))].sort();
+            this.filledCategories = [...new Set(icons.filter((icon) => icon.f).map((icon) => icon.c).filter(Boolean))].sort();
+            this.refreshCategoryOptions();
+        }
+
+        // The Filled set only spans some categories; when the filled variant is
+        // active (via the field setting or the Filled tab), hide the rest
+        refreshCategoryOptions() {
+            if (!this.allCategories) {
+                return;
+            }
+
+            const filledOnly = this.config.style === 'filled' || this.variantFilter === 'filled';
+            const cats = filledOnly ? this.filledCategories : this.allCategories;
+            const current = this.catSelect.value;
+
+            while (this.catSelect.options.length > 1) {
+                this.catSelect.remove(1);
+            }
             for (const cat of cats) {
                 const option = document.createElement('option');
                 option.value = cat;
                 option.textContent = cat;
                 this.catSelect.appendChild(option);
+            }
+
+            // Keep the current category if it still exists; otherwise reset
+            if (current && cats.includes(current)) {
+                this.catSelect.value = current;
+            } else {
+                this.catSelect.value = '';
+                this.categoryFilter = '';
             }
         }
 
@@ -136,18 +170,43 @@
             if (this.config.style === 'all') {
                 this.variantFilter = 'outline';
 
+                // Before the category dropdown: its options depend on the tabs
                 const $filters = $(
                     '<div class="btngroup btngroup--exclusive tabler-icon-modal__filters">' +
                         '<button type="button" class="btn active" data-filter="outline">' + Craft.t('tabler', 'Outline') + '</button>' +
                         '<button type="button" class="btn" data-filter="filled">' + Craft.t('tabler', 'Filled') + '</button>' +
                     '</div>'
-                ).appendTo(header);
+                ).insertBefore(header.find('.tabler-icon-modal__cats'));
 
+                this.$filters = $filters;
                 $filters.on('click', 'button', (event) => {
                     $filters.find('button').removeClass('active');
                     $(event.currentTarget).addClass('active');
                     this.variantFilter = event.currentTarget.dataset.filter;
+                    this.refreshCategoryOptions();
                     this.search(this.searchInput.value);
+                });
+            }
+
+            if (this.config.random) {
+                const $random = $(
+                    '<button type="button" class="btn tabler-icon-modal__random" aria-label="' + Craft.t('tabler', 'Random icon') + '" title="' + Craft.t('tabler', 'Random icon') + '">' +
+                        '<span class="tabler-glyph" aria-hidden="true"></span>' +
+                    '</button>'
+                ).appendTo(header);
+                this.randomGlyphEl = $random.find('.tabler-glyph')[0];
+                // event.detail is 0 for keyboard activation, >0 for real clicks:
+                // mouse rolls focus the icon (Enter/Space commits immediately);
+                // keyboard rolls keep focus here so Enter keeps re-rolling
+                $random[0].addEventListener('click', (event) => this.rollRandomCell(event.detail === 0));
+
+                // Down enters the grid at the rolled icon (or the anchor),
+                // consistent with Down in the search field
+                $random[0].addEventListener('keydown', (event) => {
+                    if (event.key === 'ArrowDown') {
+                        event.preventDefault();
+                        this.focusAnchorCell();
+                    }
                 });
             }
 
@@ -160,9 +219,29 @@
             this.countEl = $footer.find('[data-count]')[0];
 
             let debounce = null;
+            let debouncePending = false;
             this.searchInput.addEventListener('input', () => {
                 clearTimeout(debounce);
-                debounce = setTimeout(() => this.search(this.searchInput.value), 120);
+                debouncePending = true;
+                debounce = setTimeout(() => {
+                    debouncePending = false;
+                    this.search(this.searchInput.value);
+                }, 120);
+            });
+
+            // Down from the search field jumps into the grid — at the current
+            // anchor (the selected icon on open, or the last position), or the
+            // first fresh result when a search is pending
+            this.searchInput.addEventListener('keydown', (event) => {
+                if (event.key === 'ArrowDown') {
+                    event.preventDefault();
+                    if (debouncePending) {
+                        clearTimeout(debounce);
+                        debouncePending = false;
+                        this.search(this.searchInput.value);
+                    }
+                    this.focusAnchorCell();
+                }
             });
 
             this.bodyEl.addEventListener('scroll', () => {
@@ -217,6 +296,141 @@
             });
         }
 
+        // Bring the current selection into view (rendering out to it if it’s
+        // beyond the rendered chunks) and make it the grid’s Tab entry point.
+        // All of it is deferred: rendering thousands of cells before first
+        // paint makes opening laggy, and Garnish’s fade means scrollIntoView
+        // has no layout to work with yet anyway.
+        scrollToSelected() {
+            if (!this.nameInput.value) {
+                return;
+            }
+
+            setTimeout(() => {
+                const name = this.nameInput.value;
+                if (!name || !this.results || !this.results.length) {
+                    return;
+                }
+
+                const variant = this.variantInput.value || 'outline';
+
+                // A filled selection isn’t in the default Outline tab — switch
+                // the picker to the selection’s variant first
+                if (this.$filters && this.variantFilter !== variant) {
+                    this.variantFilter = variant;
+                    this.$filters.find('button').removeClass('active');
+                    this.$filters.find('[data-filter="' + variant + '"]').addClass('active');
+                    this.refreshCategoryOptions();
+                    this.search(this.searchInput.value);
+                }
+
+                const index = this.results.findIndex((entry) => entry.name === name && entry.variant === variant);
+                if (index === -1) {
+                    return;
+                }
+
+                while (index >= this.rendered && this.rendered < this.results.length) {
+                    this.renderMore();
+                }
+
+                const cell = this.gridEl.children[index];
+                if (!cell) {
+                    return;
+                }
+
+                const previousAnchor = this.gridEl.querySelector('[tabindex="0"]');
+                if (previousAnchor) {
+                    previousAnchor.tabIndex = -1;
+                }
+                cell.tabIndex = 0;
+                cell.scrollIntoView({block: 'center'});
+            }, 150);
+        }
+
+        // Keep the selected highlight in sync on the already-rendered grid
+        // (cells only pick it up at render time otherwise)
+        markSelectedCell(name, variant) {
+            if (!this.gridEl) {
+                return;
+            }
+            const previous = this.gridEl.querySelector('.tabler-icon-cell--selected');
+            if (previous) {
+                previous.classList.remove('tabler-icon-cell--selected');
+            }
+            if (name) {
+                const cell = this.gridEl.querySelector(`[data-name="${name}"][data-variant="${variant}"]`);
+                if (cell) {
+                    cell.classList.add('tabler-icon-cell--selected');
+                }
+            }
+        }
+
+        // Move the roving-tabindex focus to the result at the given index,
+        // rendering more chunks if it isn’t in the DOM yet
+        focusCellAt(index) {
+            while (index >= this.rendered && this.rendered < this.results.length) {
+                this.renderMore();
+            }
+            const target = this.gridEl.children[index];
+            if (!target) {
+                return;
+            }
+            const previous = this.gridEl.querySelector('[tabindex="0"]');
+            if (previous) {
+                previous.tabIndex = -1;
+            }
+            target.tabIndex = 0;
+            target.focus();
+            target.scrollIntoView({block: 'nearest'});
+        }
+
+        // Focus the grid’s current entry point: the selected icon on open,
+        // a rolled icon after Random, or wherever navigation last was
+        focusAnchorCell() {
+            const anchor = this.gridEl.querySelector('[tabindex="0"]') || this.gridEl.children[0];
+            if (anchor) {
+                anchor.focus();
+                anchor.scrollIntoView({block: 'nearest'});
+            }
+        }
+
+        // Highlight a random icon from the current results. Mouse rolls focus
+        // it (Enter/Space commits, clicking the button re-rolls); keyboard
+        // rolls leave focus on the Random button so Enter re-rolls, and the
+        // rolled cell becomes the grid’s Tab/Down entry point.
+        rollRandomCell(keepFocusOnButton) {
+            if (!this.results || !this.results.length) {
+                return;
+            }
+
+            const index = Math.floor(Math.random() * this.results.length);
+            while (index >= this.rendered && this.rendered < this.results.length) {
+                this.renderMore();
+            }
+
+            const target = this.gridEl.children[index];
+            if (!target) {
+                return;
+            }
+
+            const previousRoll = this.gridEl.querySelector('.tabler-icon-cell--rolled');
+            if (previousRoll) {
+                previousRoll.classList.remove('tabler-icon-cell--rolled');
+            }
+            const previousAnchor = this.gridEl.querySelector('[tabindex="0"]');
+            if (previousAnchor) {
+                previousAnchor.tabIndex = -1;
+            }
+
+            target.classList.add('tabler-icon-cell--rolled');
+            target.tabIndex = 0;
+            target.scrollIntoView({block: 'nearest'});
+
+            if (!keepFocusOnButton) {
+                target.focus();
+            }
+        }
+
         // Roving tabindex: arrows move focus around the grid, Tab moves past it.
         // Cells are real buttons, so Enter/Space select natively.
         handleGridKeydown(event) {
@@ -244,24 +458,8 @@
 
             index = Math.max(0, Math.min(index, this.results.length - 1));
 
-            // The grid renders in chunks; make sure the target cell exists
-            while (index >= this.rendered && this.rendered < this.results.length) {
-                this.renderMore();
-            }
-
-            const target = this.gridEl.children[index];
-            if (!target) {
-                return;
-            }
-
             event.preventDefault();
-            const previous = this.gridEl.querySelector('[tabindex="0"]');
-            if (previous) {
-                previous.tabIndex = -1;
-            }
-            target.tabIndex = 0;
-            target.focus();
-            target.scrollIntoView({block: 'nearest'});
+            this.focusCellAt(index);
         }
 
         renderMore() {
@@ -305,6 +503,8 @@
             this.variantInput.value = variant;
             this.nameInput.dispatchEvent(new Event('change', {bubbles: true}));
 
+            this.markSelectedCell(name, variant);
+
             this.previewEl.innerHTML = '';
             this.previewEl.appendChild(glyph(code, variant));
             this.previewEl.setAttribute('title', label(name, variant));
@@ -319,6 +519,8 @@
             this.nameInput.value = '';
             this.variantInput.value = '';
             this.nameInput.dispatchEvent(new Event('change', {bubbles: true}));
+
+            this.markSelectedCell(null, null);
 
             this.previewEl.innerHTML = '';
             this.previewEl.setAttribute('title', Craft.t('tabler', 'Choose icon'));
