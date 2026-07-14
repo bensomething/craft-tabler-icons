@@ -173,7 +173,29 @@ class TablerIconField extends Field implements PreviewableFieldInterface, Thumba
             'defaults' => false,
         ]);
 
-        return $svg !== '' ? $svg : null;
+        return $svg !== '' ? self::hardenSvgShapes($svg) : null;
+    }
+
+    /**
+     * Adds per-shape inline styles so CP hover/selection rules (e.g. the
+     * autocomplete menus’ `svg path { fill: var(--white); stroke-width: 0 }`,
+     * built for Craft’s solid icons) can’t fill Tabler’s invisible bounding
+     * path or erase its strokes. Each shape keeps its own fill, or inherits
+     * the root’s; stroke-width inherits the root’s so it survives being
+     * zeroed. The plugin stylesheet can’t help here — thumbs render on pages
+     * where it isn’t loaded.
+     */
+    private static function hardenSvgShapes(string $svg): string
+    {
+        return preg_replace_callback(
+            '/<(path|circle|rect|line|polyline|polygon|ellipse)\b([^>]*?)\/?>/',
+            function(array $match): string {
+                $fill = preg_match('/\bfill="([^"]*)"/', $match[2], $f) ? $f[1] : 'inherit';
+                $style = sprintf('fill:%s;stroke-width:inherit', $fill);
+                return sprintf('<%s%s style="%s" />', $match[1], rtrim($match[2]), $style);
+            },
+            $svg,
+        );
     }
 
     public function getPreviewHtml(mixed $value, ElementInterface $element): string

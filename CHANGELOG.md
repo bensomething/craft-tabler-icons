@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.2 - 2026-07-14
+
+- Fixed Thumbnail Source icons rendering as solid squares on hovered rows in relation-field search results and other CP menus.
+
 ## 1.8.1 - 2026-07-14
 
 - Card thumbnails from a Tabler Icon Thumbnail Source now render small (24px), matching the native Icon field, instead of filling the card’s image slot.
