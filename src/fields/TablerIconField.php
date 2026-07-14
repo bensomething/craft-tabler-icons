@@ -155,9 +155,10 @@ class TablerIconField extends Field implements PreviewableFieldInterface, Thumba
      * outline icons as solid squares).
      *
      * Craft requests thumbs at 30 (element chips/index rows) or 120 (cards),
-     * but chip thumb slots are ~22px and get squeezed by surrounding layout.
-     * Inline width/height/flex win over the CP’s `.thumb svg` rules and flex
-     * shrinking, so the icon is always a fixed square.
+     * but chip thumb slots are ~22px and get squeezed by surrounding layout,
+     * and a 120px icon dominates cards (the native Icon field renders small
+     * there too). Inline width/height/flex win over the CP’s `.thumb svg`
+     * rules and flex shrinking, so the icon is always a fixed square.
      */
     public function getThumbHtml(mixed $value, ElementInterface $element, int $size): ?string
     {
@@ -165,7 +166,7 @@ class TablerIconField extends Field implements PreviewableFieldInterface, Thumba
             return null;
         }
 
-        $dim = $size <= 30 ? 22 : $size;
+        $dim = $size <= 30 ? 22 : 24;
         $svg = (string)$value->svg([
             'size' => $dim,
             'style' => "width:{$dim}px;height:{$dim}px;flex:none",
