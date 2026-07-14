@@ -20,14 +20,9 @@ A field type for selecting a [Tabler icon](https://tabler.io/icons) from a searc
 
 ```bash
 composer require bensomething/craft-tabler-icons
-php craft plugin/install tabler
 ```
 
 Or install from the control panel: **Settings → Plugins**.
-
-> **Installing straight from GitHub** (if not using Packagist): add
-> `{ "type": "vcs", "url": "https://github.com/bensomething/craft-tabler-icons" }`
-> to the `repositories` array in your project's `composer.json` first.
 
 ### Package Size
 
