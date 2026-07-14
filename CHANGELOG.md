@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.9.0 - 2026-07-14
+
+- Tabler Icon fields are now inline-editable in element indexes.
+- Added a **Show Categories Dropdown** field setting to hide the picker’s category filter.
+
 ## 1.8.2 - 2026-07-14
 
 - Fixed Thumbnail Source icons rendering as solid squares on hovered rows in relation-field search results and other CP menus.

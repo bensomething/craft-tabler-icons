@@ -7,14 +7,14 @@ use bensomething\tabler\web\assets\picker\PickerAsset;
 use Craft;
 use craft\base\ElementInterface;
 use craft\base\Field;
-use craft\base\PreviewableFieldInterface;
+use craft\base\InlineEditableFieldInterface;
 use craft\base\ThumbableFieldInterface;
 use craft\helpers\Cp;
 use craft\helpers\Html;
 use craft\helpers\Json;
 use yii\db\Schema;
 
-class TablerIconField extends Field implements PreviewableFieldInterface, ThumbableFieldInterface
+class TablerIconField extends Field implements InlineEditableFieldInterface, ThumbableFieldInterface
 {
     public const STYLE_ALL = 'all';
     public const STYLE_OUTLINE = 'outline';
@@ -24,6 +24,11 @@ class TablerIconField extends Field implements PreviewableFieldInterface, Thumba
      * @var string Which icon styles can be selected
      */
     public string $iconStyle = self::STYLE_ALL;
+
+    /**
+     * @var bool Show the category dropdown in the picker
+     */
+    public bool $showCategories = true;
 
     /**
      * @var bool Show a Random button in the picker that highlights a random
@@ -62,7 +67,7 @@ class TablerIconField extends Field implements PreviewableFieldInterface, Thumba
     {
         $rules = parent::defineRules();
         $rules[] = [['iconStyle'], 'in', 'range' => [self::STYLE_ALL, self::STYLE_OUTLINE, self::STYLE_FILLED]];
-        $rules[] = [['showRandomButton'], 'boolean'];
+        $rules[] = [['showCategories', 'showRandomButton'], 'boolean'];
         return $rules;
     }
 
@@ -135,6 +140,7 @@ class TablerIconField extends Field implements PreviewableFieldInterface, Thumba
         $config = [
             'indexUrl' => $bundle->baseUrl . '/icons.json',
             'style' => $this->iconStyle,
+            'categories' => $this->showCategories,
             'random' => $this->showRandomButton,
         ];
 
@@ -229,6 +235,12 @@ class TablerIconField extends Field implements PreviewableFieldInterface, Thumba
                 ['label' => Craft::t('tabler', 'Outline only'), 'value' => self::STYLE_OUTLINE],
                 ['label' => Craft::t('tabler', 'Filled only'), 'value' => self::STYLE_FILLED],
             ],
+        ]) . Cp::lightswitchFieldHtml([
+            'label' => Craft::t('tabler', 'Show Categories Dropdown'),
+            'instructions' => Craft::t('tabler', 'Show the category filter in the picker.'),
+            'id' => 'showCategories',
+            'name' => 'showCategories',
+            'on' => $this->showCategories,
         ]) . Cp::lightswitchFieldHtml([
             'label' => Craft::t('tabler', 'Show Random Button'),
             'instructions' => Craft::t('tabler', 'Adds a button to the picker that highlights a random icon from the current results.'),

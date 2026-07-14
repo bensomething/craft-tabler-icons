@@ -106,7 +106,7 @@
         }
 
         populateCategories(icons) {
-            if (this.allCategories) {
+            if (!this.catSelect || this.allCategories) {
                 return;
             }
             this.allCategories = [...new Set(icons.map((icon) => icon.c).filter(Boolean))].sort();
@@ -117,7 +117,7 @@
         // The Filled set only spans some categories; when the filled variant is
         // active (via the field setting or the Filled tab), hide the rest
         refreshCategoryOptions() {
-            if (!this.allCategories) {
+            if (!this.catSelect || !this.allCategories) {
                 return;
             }
 
@@ -148,35 +148,24 @@
             const $modal = $('<div class="modal tabler-icon-modal"/>').appendTo(Garnish.$bod);
             const $wrap = $('<div class="tabler-icon-modal__wrap"/>').appendTo($modal);
 
+            // Header order: search, outline/filled tabs, categories, random
             const header = $(
                 '<div class="tabler-icon-modal__header">' +
                     '<div class="texticon search icon clearable fullwidth">' +
                         '<input class="text fullwidth" type="text" autocomplete="off" placeholder="' + Craft.t('tabler', 'Search icons') + '">' +
                     '</div>' +
-                    '<div class="select tabler-icon-modal__cats">' +
-                        '<select aria-label="' + Craft.t('tabler', 'Category') + '">' +
-                            '<option value="">' + Craft.t('tabler', 'All categories') + '</option>' +
-                        '</select>' +
-                    '</div>' +
                 '</div>'
             ).appendTo($wrap);
-
-            this.catSelect = header.find('select')[0];
-            this.catSelect.addEventListener('change', () => {
-                this.categoryFilter = this.catSelect.value;
-                this.search(this.searchInput.value);
-            });
 
             if (this.config.style === 'all') {
                 this.variantFilter = 'outline';
 
-                // Before the category dropdown: its options depend on the tabs
                 const $filters = $(
                     '<div class="btngroup btngroup--exclusive tabler-icon-modal__filters">' +
                         '<button type="button" class="btn active" data-filter="outline">' + Craft.t('tabler', 'Outline') + '</button>' +
                         '<button type="button" class="btn" data-filter="filled">' + Craft.t('tabler', 'Filled') + '</button>' +
                     '</div>'
-                ).insertBefore(header.find('.tabler-icon-modal__cats'));
+                ).appendTo(header);
 
                 this.$filters = $filters;
                 $filters.on('click', 'button', (event) => {
@@ -184,6 +173,22 @@
                     $(event.currentTarget).addClass('active');
                     this.variantFilter = event.currentTarget.dataset.filter;
                     this.refreshCategoryOptions();
+                    this.search(this.searchInput.value);
+                });
+            }
+
+            if (this.config.categories !== false) {
+                const $cats = $(
+                    '<div class="select tabler-icon-modal__cats">' +
+                        '<select aria-label="' + Craft.t('tabler', 'Category') + '">' +
+                            '<option value="">' + Craft.t('tabler', 'All categories') + '</option>' +
+                        '</select>' +
+                    '</div>'
+                ).appendTo(header);
+
+                this.catSelect = $cats.find('select')[0];
+                this.catSelect.addEventListener('change', () => {
+                    this.categoryFilter = this.catSelect.value;
                     this.search(this.searchInput.value);
                 });
             }
