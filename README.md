@@ -2,11 +2,14 @@
 
 A field type for selecting a [Tabler icon](https://tabler.io/icons) from a searchable picker, and rendering any icon as inline SVG in your templates.
 
-- 5,000+ outline icons and 1,000+ filled icons (Tabler Icons v3.44), bundled with the plugin
-- Searchable by name, tags, and category, with outline/filled tabs
+- 5,000+ outline icons and 1,000+ filled icons, bundled with the plugin
+- Fast picker: search by name, tag, or category, outline/filled tabs, full keyboard navigation, and an optional random button
 - Inline SVG rendering with custom attributes, plays nicely with Tailwind
+- Site-wide rendering defaults via `config/tabler.php`
 - `tabler()` Twig function for hardcoding icons without a field
-- Field setting to limit picker to outline-only or filled-only icons
+- `|tabler` filter renders `{icon:name}` tokens in plain and rich text fields
+- Use an icon field as an entry type’s Thumbnail Source
+- Field setting to limit the picker to outline-only or filled-only icons
 
 ## Requirements
 
@@ -73,7 +76,6 @@ return [
         'class' => 'text-highlight',
         'stroke-width' => 1.5,
         'stroke-linecap' => 'square',
-        'stroke-linejoin' => 'bevel',
     ],
 ];
 ```
@@ -97,13 +99,35 @@ The `tabler()` Twig function returns the same Icon object for any icon name:
 {{ tabler('heart-filled') }}   {# '-filled' suffix also selects the filled variant #}
 ```
 
-`tabler()` also accepts an existing Icon object (e.g. a field value) and returns it unchanged — handy for partials that take either a name or a field value:
+`tabler()` also accepts an existing Icon object (e.g. a field value) and returns it unchanged, handy for partials that take either a name or a field value:
 
 ```twig
 {{ tabler(item.myIcon ?? 'star').svg({ size: 20 }) }}
 ```
 
 Unknown icon names render as an empty string.
+
+### Icons in Plain and Rich Text Fields
+
+The `tabler` filter replaces icon tokens in any HTML with inline SVG, handy for CKEditor fields:
+
+```twig
+{{ entry.body|tabler }}
+```
+
+Authors can type a token anywhere in their content (a `-filled` suffix works here too):
+
+```
+Call us {icon:phone} or {icon:heart-filled} us on social.
+```
+
+Icons are sized at `1em` and aligned to sit naturally in running text so they scale with the surrounding font size and inherit its color, and `svgDefaults` apply. Each is wrapped in `<span class="tabler-icon">` if you want a styling hook. Unknown icon names render as an empty string.
+
+The filter works on any string, not just CKEditor fields — Plain Text fields, Table columns, even titles. One caveat: `|tabler` marks its output as safe HTML, which skips Craft’s usual escaping. That’s fine for already-purified rich text, but for plain-text values escape first. Tokens survive escaping, so this just works:
+
+```twig
+{{ entry.tagline|e|tabler }}
+```
 
 ### With Tailwind
 

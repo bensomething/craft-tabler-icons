@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.8.0 - 2026-07-14
+
+- Added a `tabler` Twig filter that replaces `{icon:name}` tokens in plain and rich text with inline SVG — ideal for CKEditor fields.
+
 ## 1.7.0 - 2026-07-14
 
 - Added a **Show Random Button** field setting: a shuffle button in the picker selects a random icon from the current results. Clicking focuses the icon (`Enter`/`Space` selects it), activating the button from the keyboard keeps focus on it so `Enter`/`Space` re-rolls, with `Tab` or `Down` moving to the selected icon.

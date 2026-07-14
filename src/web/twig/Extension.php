@@ -4,6 +4,7 @@ namespace bensomething\tabler\web\twig;
 
 use bensomething\tabler\models\Icon;
 use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 use Twig\TwigFunction;
 
 class Extension extends AbstractExtension
@@ -13,6 +14,36 @@ class Extension extends AbstractExtension
         return [
             new TwigFunction('tabler', [$this, 'icon'], ['is_safe' => ['html']]),
         ];
+    }
+
+    public function getFilters(): array
+    {
+        return [
+            new TwigFilter('tabler', [$this, 'replaceIcons'], ['is_safe' => ['html']]),
+        ];
+    }
+
+    /**
+     * Replaces `{icon:heart-filled}` tokens in text with inline SVG.
+     *
+     * Icons are sized at 1em and nudged down slightly so they sit naturally
+     * in running text at any font size, wrapped in a span for styling hooks.
+     */
+    public function replaceIcons(mixed $html): string
+    {
+        return preg_replace_callback(
+            '/\{icon:\s*([a-z0-9-]+)\s*\}/',
+            function(array $match): string {
+                // display is explicit because CSS resets (e.g. Tailwind
+                // Preflight) commonly set svg { display: block }
+                $svg = (string)$this->icon($match[1])->svg([
+                    'style' => 'display:inline-block;width:1em;height:1em;vertical-align:-0.125em',
+                ]);
+
+                return $svg !== '' ? '<span class="tabler-icon">' . $svg . '</span>' : '';
+            },
+            (string)$html,
+        );
     }
 
     public function icon(string|Icon $name, ?string $variant = null): Icon
