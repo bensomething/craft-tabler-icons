@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.1 - 2026-07-14
+
+- The picker header now adapts to small screens.
+
 ## 1.9.0 - 2026-07-14
 
 - Tabler Icon fields are now inline-editable in element indexes.

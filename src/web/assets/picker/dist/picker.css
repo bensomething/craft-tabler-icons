@@ -99,19 +99,62 @@
     display: flex;
     align-items: center;
     flex-shrink: 0;
+    flex-wrap: wrap;
     gap: 12px;
     padding: 16px 20px;
     border-bottom: 1px solid var(--hairline-color, #e3e5e8);
 }
 
-.tabler-icon-modal__header .texticon {
-    flex: 1;
+/* The search row never wraps internally: its contents (search + tabs, when
+   a category dropdown exists) stay together at any width, with the search
+   shrinking as needed. It dominates spare space on a shared row (999:1). */
+.tabler-icon-modal__searchrow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 999 1 200px;
+    min-width: 0;
+}
+
+.tabler-icon-modal__searchrow .texticon {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+/* The controls group wraps below as one unit; its stretchy member (the
+   category dropdown, or the tabs when there's no dropdown) spans the row */
+.tabler-icon-modal__controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1 1 auto;
+}
+
+.tabler-icon-modal__controls .tabler-icon-modal__filters {
+    display: flex;
+    flex: 1 1 auto;
+}
+
+.tabler-icon-modal__controls .tabler-icon-modal__filters .btn {
+    flex: 1 1 auto;
 }
 
 .tabler-icon-modal__filters,
-.tabler-icon-modal__cats,
 .tabler-icon-modal__random {
     flex-shrink: 0;
+}
+
+/* The select fills its wrapper so Craft's chevron (pinned to the wrapper's
+   right edge) always sits inside the control. The wrapper grows within the
+   controls group, so the dropdown stretches when the group has its own row
+   but stays compact when the group shares the row with the search field. */
+.tabler-icon-modal__cats {
+    flex: 1 1 auto;
+    min-width: 150px;
+}
+
+.tabler-icon-modal__cats select {
+    width: 100%;
 }
 
 .tabler-icon-modal__random .tabler-glyph {

@@ -148,14 +148,26 @@
             const $modal = $('<div class="modal tabler-icon-modal"/>').appendTo(Garnish.$bod);
             const $wrap = $('<div class="tabler-icon-modal__wrap"/>').appendTo($modal);
 
-            // Header order: search, outline/filled tabs, categories, random
+            // Layout: the search row never wraps internally, so whatever
+            // lives in it stays beside the search at any width. The controls
+            // group wraps below as a unit, its first stretchy child spanning
+            // the row. With a category dropdown the tabs stay in the search
+            // row and the dropdown stretches; without one, the tabs move to
+            // the group and stretch instead.
             const header = $(
                 '<div class="tabler-icon-modal__header">' +
-                    '<div class="texticon search icon clearable fullwidth">' +
-                        '<input class="text fullwidth" type="text" autocomplete="off" placeholder="' + Craft.t('tabler', 'Search icons') + '">' +
+                    '<div class="tabler-icon-modal__searchrow">' +
+                        '<div class="texticon search icon clearable">' +
+                            '<input class="text fullwidth" type="text" autocomplete="off" placeholder="' + Craft.t('tabler', 'Search icons') + '">' +
+                        '</div>' +
                     '</div>' +
                 '</div>'
             ).appendTo($wrap);
+
+            const $searchRow = header.find('.tabler-icon-modal__searchrow');
+            let $controls = null;
+            const controls = () => ($controls ??= $('<div class="tabler-icon-modal__controls"/>').appendTo(header));
+            const hasCategories = this.config.categories !== false;
 
             if (this.config.style === 'all') {
                 this.variantFilter = 'outline';
@@ -165,7 +177,7 @@
                         '<button type="button" class="btn active" data-filter="outline">' + Craft.t('tabler', 'Outline') + '</button>' +
                         '<button type="button" class="btn" data-filter="filled">' + Craft.t('tabler', 'Filled') + '</button>' +
                     '</div>'
-                ).appendTo(header);
+                ).appendTo(hasCategories ? $searchRow : controls());
 
                 this.$filters = $filters;
                 $filters.on('click', 'button', (event) => {
@@ -177,14 +189,14 @@
                 });
             }
 
-            if (this.config.categories !== false) {
+            if (hasCategories) {
                 const $cats = $(
                     '<div class="select tabler-icon-modal__cats">' +
                         '<select aria-label="' + Craft.t('tabler', 'Category') + '">' +
                             '<option value="">' + Craft.t('tabler', 'All categories') + '</option>' +
                         '</select>' +
                     '</div>'
-                ).appendTo(header);
+                ).appendTo(controls());
 
                 this.catSelect = $cats.find('select')[0];
                 this.catSelect.addEventListener('change', () => {
@@ -198,7 +210,7 @@
                     '<button type="button" class="btn tabler-icon-modal__random" aria-label="' + Craft.t('tabler', 'Random icon') + '" title="' + Craft.t('tabler', 'Random icon') + '">' +
                         '<span class="tabler-glyph" aria-hidden="true"></span>' +
                     '</button>'
-                ).appendTo(header);
+                ).appendTo($controls || (this.config.style === 'all' ? controls() : $searchRow));
                 this.randomGlyphEl = $random.find('.tabler-glyph')[0];
                 // event.detail is 0 for keyboard activation, >0 for real clicks:
                 // mouse rolls focus the icon (Enter/Space commits immediately);
@@ -264,7 +276,15 @@
 
             this.gridEl.addEventListener('keydown', (event) => this.handleGridKeydown(event));
 
-            this.modal = new Garnish.Modal($modal);
+            this.modal = new Garnish.Modal($modal, {
+                // Garnish resizes/repositions the modal after fading in, which
+                // reflows the grid — re-center the selection once it settles
+                onFadeIn: () => {
+                    if (this.scrollTarget && this.scrollTarget.isConnected) {
+                        this.scrollTarget.scrollIntoView({block: 'center'});
+                    }
+                },
+            });
         }
 
         search(query) {
@@ -348,6 +368,7 @@
                     previousAnchor.tabIndex = -1;
                 }
                 cell.tabIndex = 0;
+                this.scrollTarget = cell;
                 cell.scrollIntoView({block: 'center'});
             }, 150);
         }
