@@ -7,9 +7,6 @@ use craft\helpers\Html;
 use craft\web\twig\SafeHtml;
 use Twig\Markup;
 
-/**
- * Represents a selected Tabler icon.
- */
 class Icon implements \JsonSerializable, \Stringable, SafeHtml
 {
     public const VARIANT_OUTLINE = 'outline';
@@ -24,14 +21,9 @@ class Icon implements \JsonSerializable, \Stringable, SafeHtml
     }
 
     /**
-     * Returns the inline SVG markup for the icon.
-     *
-     * Supported attributes: `size` (sets width + height), plus any HTML
-     * attribute (`class`, `width`, `height`, `stroke-width`, `aria-label`, …).
-     *
-     * Site-wide defaults can be set via `svgDefaults` in `config/tabler.php`.
-     * Per-call attributes override defaults, except `class`, which is combined.
-     * Pass `defaults: false` to skip the configured defaults for one call.
+     * Accepts `size` (sets width + height) and any HTML attribute. Merges
+     * `svgDefaults` from config/tabler.php (per-call wins, `class` combines);
+     * pass `defaults: false` to skip them.
      */
     public function svg(array $attributes = []): Markup
     {
@@ -63,9 +55,7 @@ class Icon implements \JsonSerializable, \Stringable, SafeHtml
         return new Markup($contents, 'UTF-8');
     }
 
-    /**
-     * Converts the unquoted-friendly `strokeWidth` alias to 'stroke-width'.
-     */
+    /** `strokeWidth` alias avoids quoting the hyphenated key in Twig. */
     private static function normalizeStrokeWidth(array $attributes): array
     {
         if (isset($attributes['strokeWidth'])) {
@@ -76,10 +66,7 @@ class Icon implements \JsonSerializable, \Stringable, SafeHtml
         return $attributes;
     }
 
-    /**
-     * Merges the configured `svgDefaults` under the given attributes.
-     * Call-time attributes win per key; `class` values are combined.
-     */
+    /** Call-time attributes win per key; `class` values are combined. */
     private static function mergeSvgDefaults(array $attributes): array
     {
         $skipDefaults = ($attributes['defaults'] ?? true) === false;
@@ -110,9 +97,6 @@ class Icon implements \JsonSerializable, \Stringable, SafeHtml
         return $attributes + $defaults;
     }
 
-    /**
-     * Returns the raw SVG file contents, or null if the icon doesn’t exist.
-     */
     public function rawSvg(): ?string
     {
         $path = $this->path();
@@ -124,9 +108,7 @@ class Icon implements \JsonSerializable, \Stringable, SafeHtml
         return trim(file_get_contents($path));
     }
 
-    /**
-     * Returns a human-friendly label, e.g. "ad-off" -> "Ad Off".
-     */
+    /** "ad-off" -> "Ad Off". */
     public function getLabel(): string
     {
         $label = ucwords(str_replace('-', ' ', $this->name));
@@ -138,10 +120,7 @@ class Icon implements \JsonSerializable, \Stringable, SafeHtml
         return $label;
     }
 
-    /**
-     * Returns the CSS classes for use with the Tabler webfont
-     * (e.g. `ti ti-home` / `ti ti-heart-filled`).
-     */
+    /** Tabler webfont classes, e.g. `ti ti-home` / `ti ti-heart-filled`. */
     public function classes(): string
     {
         $suffix = $this->variant === self::VARIANT_FILLED ? '-filled' : '';

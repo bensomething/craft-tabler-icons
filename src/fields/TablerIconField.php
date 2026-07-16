@@ -34,15 +34,13 @@ class TablerIconField extends Field implements InlineEditableFieldInterface, Thu
     public bool $showCategories = true;
 
     /**
-     * @var bool Show a Random button in the picker that highlights a random
-     * icon from the current results
+     * @var bool Show a Random button in the picker
      */
     public bool $showRandomButton = false;
 
     public function __construct(array $config = [])
     {
-        // Remove settings that no longer exist
-        unset($config['buttonStyle']);
+        unset($config['buttonStyle']); // retired setting
         parent::__construct($config);
     }
 
@@ -82,7 +80,6 @@ class TablerIconField extends Field implements InlineEditableFieldInterface, Thu
 
         if (is_string($value) && $value !== '') {
             $decoded = Json::decodeIfJson($value);
-            // Plain icon name string
             if (is_string($decoded)) {
                 return new Icon($decoded);
             }
@@ -159,15 +156,10 @@ class TablerIconField extends Field implements InlineEditableFieldInterface, Thu
     }
 
     /**
-     * Lets the field be an entry type’s Thumbnail Source. Returns the raw SVG
-     * (not wrapped in .cp-icon, whose CSS force-fills shapes and would render
-     * outline icons as solid squares).
-     *
-     * Craft requests thumbs at 30 (element chips/index rows) or 120 (cards),
-     * but chip thumb slots are ~22px and get squeezed by surrounding layout,
-     * and a 120px icon dominates cards (the native Icon field renders small
-     * there too). Inline width/height/flex win over the CP’s `.thumb svg`
-     * rules and flex shrinking, so the icon is always a fixed square.
+     * Thumbnail Source support. Raw SVG (not the .cp-icon wrapper, which
+     * force-fills shapes into solid squares) with inline sizing that beats the
+     * CP's `.thumb svg` rules and flex shrinking. Craft requests 30 (chips/rows)
+     * or 120 (cards); 22/24px keeps it small like the native Icon field.
      */
     public function getThumbHtml(mixed $value, ElementInterface $element, int $size): ?string
     {
@@ -186,13 +178,10 @@ class TablerIconField extends Field implements InlineEditableFieldInterface, Thu
     }
 
     /**
-     * Adds per-shape inline styles so CP hover/selection rules (e.g. the
-     * autocomplete menus’ `svg path { fill: var(--white); stroke-width: 0 }`,
-     * built for Craft’s solid icons) can’t fill Tabler’s invisible bounding
-     * path or erase its strokes. Each shape keeps its own fill, or inherits
-     * the root’s; stroke-width inherits the root’s so it survives being
-     * zeroed. The plugin stylesheet can’t help here — thumbs render on pages
-     * where it isn’t loaded.
+     * Inline per-shape fill/stroke-width so CP hover/selection rules (which
+     * force-fill SVG shapes white for Craft's solid icons) can't fill Tabler's
+     * bounding path or zero its strokes. Needed inline — thumbs render on pages
+     * without the plugin stylesheet.
      */
     private static function hardenSvgShapes(string $svg): string
     {

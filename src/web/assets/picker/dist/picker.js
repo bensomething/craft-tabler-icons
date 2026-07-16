@@ -24,7 +24,7 @@
         return span;
     }
 
-    // "ad-off" -> "Ad Off", with a variant suffix for filled icons
+    // "ad-off" -> "Ad Off"
     function label(name, variant) {
         const words = name.replace(/-/g, ' ').replace(/\b[a-z]/g, (c) => c.toUpperCase());
         return words + (variant === 'filled' ? ' (Filled)' : '');
@@ -56,8 +56,7 @@
 
             this.chooseBtn.addEventListener('click', () => this.open());
             this.removeBtn.addEventListener('click', () => this.clear());
-            // The preview box is a redundant click target; the Choose/Change
-            // button remains the keyboard-accessible path.
+            // redundant click target; the button stays the keyboard path
             this.previewEl.addEventListener('click', () => this.open());
         }
 
@@ -114,8 +113,7 @@
             this.refreshCategoryOptions();
         }
 
-        // The Filled set only spans some categories; when the filled variant is
-        // active (via the field setting or the Filled tab), hide the rest
+        // Filled icons only span some categories; hide the rest when filled
         refreshCategoryOptions() {
             if (!this.catSelect || !this.allCategories) {
                 return;
@@ -148,12 +146,10 @@
             const $modal = $('<div class="modal tabler-icon-modal"/>').appendTo(Garnish.$bod);
             const $wrap = $('<div class="tabler-icon-modal__wrap"/>').appendTo($modal);
 
-            // Layout: the search row never wraps internally, so whatever
-            // lives in it stays beside the search at any width. The controls
-            // group wraps below as a unit, its first stretchy child spanning
-            // the row. With a category dropdown the tabs stay in the search
-            // row and the dropdown stretches; without one, the tabs move to
-            // the group and stretch instead.
+            // The search row never wraps internally, so its contents stay
+            // beside the search at any width; the controls group wraps below as
+            // a unit. Tabs live with the search when there's a dropdown (which
+            // stretches), else in the group (where the tabs stretch instead).
             const header = $(
                 '<div class="tabler-icon-modal__header">' +
                     '<div class="tabler-icon-modal__searchrow">' +
@@ -212,13 +208,10 @@
                     '</button>'
                 ).appendTo($controls || (this.config.style === 'all' ? controls() : $searchRow));
                 this.randomGlyphEl = $random.find('.tabler-glyph')[0];
-                // event.detail is 0 for keyboard activation, >0 for real clicks:
-                // mouse rolls focus the icon (Enter/Space commits immediately);
-                // keyboard rolls keep focus here so Enter keeps re-rolling
+                // event.detail 0 = keyboard: keep focus on the button so Enter
+                // re-rolls. Mouse: focus the icon so Enter/Space commits it.
                 $random[0].addEventListener('click', (event) => this.rollRandomCell(event.detail === 0));
 
-                // Down enters the grid at the rolled icon (or the anchor),
-                // consistent with Down in the search field
                 $random[0].addEventListener('keydown', (event) => {
                     if (event.key === 'ArrowDown') {
                         event.preventDefault();
@@ -246,9 +239,8 @@
                 }, 120);
             });
 
-            // Down from the search field jumps into the grid — at the current
-            // anchor (the selected icon on open, or the last position), or the
-            // first fresh result when a search is pending
+            // Down jumps into the grid; flush a pending search first so focus
+            // lands on the fresh results rather than a stale anchor
             this.searchInput.addEventListener('keydown', (event) => {
                 if (event.key === 'ArrowDown') {
                     event.preventDefault();
@@ -321,11 +313,9 @@
             });
         }
 
-        // Bring the current selection into view (rendering out to it if it’s
-        // beyond the rendered chunks) and make it the grid’s Tab entry point.
-        // All of it is deferred: rendering thousands of cells before first
-        // paint makes opening laggy, and Garnish’s fade means scrollIntoView
-        // has no layout to work with yet anyway.
+        // Scroll the selection into view and make it the Tab entry point.
+        // Deferred: rendering out to a deep selection before first paint is
+        // laggy, and Garnish's fade leaves scrollIntoView no layout yet anyway.
         scrollToSelected() {
             if (!this.nameInput.value) {
                 return;
@@ -339,8 +329,7 @@
 
                 const variant = this.variantInput.value || 'outline';
 
-                // A filled selection isn’t in the default Outline tab — switch
-                // the picker to the selection’s variant first
+                // switch to the selection's tab so a filled pick is in results
                 if (this.$filters && this.variantFilter !== variant) {
                     this.variantFilter = variant;
                     this.$filters.find('button').removeClass('active');
@@ -373,8 +362,8 @@
             }, 150);
         }
 
-        // Keep the selected highlight in sync on the already-rendered grid
-        // (cells only pick it up at render time otherwise)
+        // Sync the highlight on already-rendered cells (they only get it at
+        // render time otherwise)
         markSelectedCell(name, variant) {
             if (!this.gridEl) {
                 return;
@@ -391,8 +380,8 @@
             }
         }
 
-        // Move the roving-tabindex focus to the result at the given index,
-        // rendering more chunks if it isn’t in the DOM yet
+        // Move roving-tabindex focus to the result at `index`, rendering chunks
+        // out to it if needed
         focusCellAt(index) {
             while (index >= this.rendered && this.rendered < this.results.length) {
                 this.renderMore();
@@ -410,8 +399,8 @@
             target.scrollIntoView({block: 'nearest'});
         }
 
-        // Focus the grid’s current entry point: the selected icon on open,
-        // a rolled icon after Random, or wherever navigation last was
+        // Focus the grid's current entry point (selection, last roll, or last
+        // navigated cell)
         focusAnchorCell() {
             const anchor = this.gridEl.querySelector('[tabindex="0"]') || this.gridEl.children[0];
             if (anchor) {
@@ -420,10 +409,8 @@
             }
         }
 
-        // Highlight a random icon from the current results. Mouse rolls focus
-        // it (Enter/Space commits, clicking the button re-rolls); keyboard
-        // rolls leave focus on the Random button so Enter re-rolls, and the
-        // rolled cell becomes the grid’s Tab/Down entry point.
+        // Highlight a random result. keepFocusOnButton (keyboard) leaves focus
+        // on the button so Enter re-rolls; otherwise focus the rolled cell.
         rollRandomCell(keepFocusOnButton) {
             if (!this.results || !this.results.length) {
                 return;

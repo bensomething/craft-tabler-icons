@@ -24,18 +24,16 @@ class Extension extends AbstractExtension
     }
 
     /**
-     * Replaces `{icon:heart-filled}` tokens in text with inline SVG.
-     *
-     * Icons are sized at 1em and nudged down slightly so they sit naturally
-     * in running text at any font size, wrapped in a span for styling hooks.
+     * Replaces `{icon:heart-filled}` tokens with inline SVG, sized at 1em and
+     * baseline-nudged to sit in running text, wrapped in a span styling hook.
      */
     public function replaceIcons(mixed $html): string
     {
         return preg_replace_callback(
             '/\{icon:\s*([a-z0-9-]+)\s*\}/',
             function(array $match): string {
-                // display is explicit because CSS resets (e.g. Tailwind
-                // Preflight) commonly set svg { display: block }
+                // explicit display beats CSS resets (e.g. Tailwind Preflight's
+                // svg { display: block })
                 $svg = (string)$this->icon($match[1])->svg([
                     'style' => 'display:inline-block;width:1em;height:1em;vertical-align:-0.125em',
                 ]);
@@ -48,15 +46,13 @@ class Extension extends AbstractExtension
 
     public function icon(string|Icon $name, ?string $variant = null): Icon
     {
-        // Pass an existing Icon (e.g. a field value) straight through, so
-        // templates can hand tabler() either a name or a field value.
+        // pass a field value straight through
         if ($name instanceof Icon) {
             return $name;
         }
 
-        // A '-filled' suffix selects the filled variant: tabler('heart-filled').
-        // No outline icon name ends in '-filled', so this is unambiguous — but
-        // only resolve it when the base icon actually has a filled variant.
+        // '-filled' suffix selects the filled variant (unambiguous — no outline
+        // name ends in '-filled'), but only if that filled icon exists
         if ($variant === null && str_ends_with($name, '-filled')) {
             $filled = new Icon(substr($name, 0, -7), Icon::VARIANT_FILLED);
             $path = $filled->path();
