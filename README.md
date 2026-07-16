@@ -132,6 +132,28 @@ Skip `size` and use utility classes, CSS wins over the SVG's intrinsic `width`/`
 {{ tabler('calendar').svg({ class: 'size-4 sm:size-6 shrink-0 text-emerald-600' }) }}
 ```
 
+### GraphQL
+
+You query the field by its handle, and each Tabler Icon field resolves to a shared `tabler_Icon` type with these subfields:
+
+```graphql
+{
+  entries(section: "features") {
+    ... on feature_Entry {
+      myIcon {
+        name            # "heart"
+        variant         # "outline" or "filled"
+        label           # "Heart (Filled)"
+        classes         # "ti ti-heart-filled", for the Tabler webfont
+        svg(size: 24)   # inline SVG markup, svgDefaults apply
+      }
+    }
+  }
+}
+```
+
+Empty fields resolve to `null`.
+
 ### Webfont Classes
 
 If you load the Tabler webfont on the front end yourself, `classes()` gives you the class names:

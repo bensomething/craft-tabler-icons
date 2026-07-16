@@ -9,9 +9,12 @@ use craft\base\ElementInterface;
 use craft\base\Field;
 use craft\base\InlineEditableFieldInterface;
 use craft\base\ThumbableFieldInterface;
+use craft\gql\GqlEntityRegistry;
 use craft\helpers\Cp;
 use craft\helpers\Html;
 use craft\helpers\Json;
+use GraphQL\Type\Definition\ObjectType;
+use GraphQL\Type\Definition\Type;
 use yii\db\Schema;
 
 class TablerIconField extends Field implements InlineEditableFieldInterface, ThumbableFieldInterface
@@ -220,6 +223,49 @@ class TablerIconField extends Field implements InlineEditableFieldInterface, Thu
             'title' => $value->getLabel(),
             'style' => ['display' => 'inline-flex', 'vertical-align' => 'middle'],
         ]);
+    }
+
+    public function getContentGqlType(): Type|array
+    {
+        $typeName = 'tabler_Icon';
+
+        return GqlEntityRegistry::getOrCreate($typeName, fn() => new ObjectType([
+            'name' => $typeName,
+            'fields' => [
+                'name' => [
+                    'type' => Type::string(),
+                    'description' => 'The icon name, e.g. `heart`.',
+                ],
+                'variant' => [
+                    'type' => Type::string(),
+                    'description' => '`outline` or `filled`.',
+                ],
+                'label' => [
+                    'type' => Type::string(),
+                    'description' => 'A human-friendly label, e.g. `Ad Off`.',
+                    'resolve' => fn(Icon $icon) => $icon->getLabel(),
+                ],
+                'classes' => [
+                    'type' => Type::string(),
+                    'description' => 'Tabler webfont class names, e.g. `ti ti-heart-filled`.',
+                    'resolve' => fn(Icon $icon) => $icon->classes(),
+                ],
+                'svg' => [
+                    'type' => Type::string(),
+                    'description' => 'The inline SVG markup. `svgDefaults` apply.',
+                    'args' => [
+                        'size' => [
+                            'type' => Type::int(),
+                            'description' => 'Sets the width and height attributes.',
+                        ],
+                    ],
+                    'resolve' => function(Icon $icon, array $args) {
+                        $svg = (string)$icon->svg(isset($args['size']) ? ['size' => $args['size']] : []);
+                        return $svg !== '' ? $svg : null;
+                    },
+                ],
+            ],
+        ]));
     }
 
     public function getSettingsHtml(): ?string
