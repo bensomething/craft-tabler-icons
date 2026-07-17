@@ -12,12 +12,30 @@ class Icon implements \JsonSerializable, \Stringable, SafeHtml
     public const VARIANT_OUTLINE = 'outline';
     public const VARIANT_FILLED = 'filled';
 
+    /**
+     * Names Tabler has renamed, mapped to their current ones, so values saved
+     * before an icon-set update keep resolving (and self-heal on next save).
+     */
+    private const RENAMED = [
+        // 3.45.0 spelling corrections
+        'brand-adobe-after-effect' => 'brand-adobe-after-effects',
+        'brand-kako-talk' => 'brand-kakao-talk',
+        'currency-rubel' => 'currency-ruble',
+        'foodsteps' => 'footsteps',
+        'gender-trasvesti' => 'gender-travesti',
+        'ikosaedr' => 'icosahedron',
+        'mood-confuzed' => 'mood-confused',
+        'physotherapist' => 'physiotherapist',
+        'sport-billard' => 'sport-billiard',
+    ];
+
     private static ?array $svgDefaults = null;
 
     public function __construct(
         public string $name,
         public string $variant = self::VARIANT_OUTLINE,
     ) {
+        $this->name = self::RENAMED[$name] ?? $name;
     }
 
     /**
