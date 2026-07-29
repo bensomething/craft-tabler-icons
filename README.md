@@ -3,7 +3,7 @@
 A field type for selecting a [Tabler icon](https://tabler.io/icons) from a searchable picker, and rendering any icon as inline SVG in your templates.
 
 - 5,000+ outline icons and 1,000+ filled icons, bundled with the plugin
-- Fast picker: search by name, tag, or category, outline/filled tabs, full keyboard navigation, and an optional random button
+- Fast picker: search by name, tag, or category, outline/filled tabs, recently used icons, full keyboard navigation, and an optional random button
 - Inline SVG rendering with custom attributes, plays nicely with Tailwind
 - Site-wide rendering defaults via `config/tabler.php`
 - `tabler()` Twig function for hardcoding icons without a field
@@ -32,7 +32,7 @@ The full Tabler icon set is bundled with the plugin, which makes it around 25MB 
 
 Create a field of type **Tabler Icon** and add it to a field layout. Authors get a **Choose** button that opens a searchable icon grid with a category filter; once an icon is selected, clicking its preview reopens the picker.
 
-**Field settings** — *Icon Style* controls whether authors can pick from both styles, outline only, or filled only. Selecting **Outline and filled** will display **Outline** and **Filled** tabs in the icon picker.
+**Field settings** — *Icon Style* controls whether authors can pick from both styles, outline only, or filled only. Selecting **Outline and filled** will display **Outline** and **Filled** tabs in the icon picker. *Show Recently Used* puts an author’s ten most recently picked icons above the results (they’re stored in the browser and shared across every Tabler Icon field), and hides them as soon as a search or category filter narrows the grid.
 
 ## Templating
 

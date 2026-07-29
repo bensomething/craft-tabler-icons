@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- The picker now shows the ten most recently selected icons above the search results, with a **Show Recently Used** field setting to turn them off. The list is stored in the browser and shared by every Tabler Icon field.
+- Read-only fields (revisions, restricted field layouts) now show just the icon, rather than disabled **Choose** and **Remove** buttons.
+
 ## 1.10.1 - 2026-07-29
 
 - Updated to [Tabler Icons 3.46.0](https://github.com/tabler/tabler-icons/releases/tag/v3.46.0), adding 18 icons and redrawing 15 others.

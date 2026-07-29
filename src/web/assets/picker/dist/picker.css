@@ -46,6 +46,11 @@
     appearance: none;
 }
 
+/* Read-only: nothing to click, so match Craft's disabled affordance */
+.tabler-icon-field .tabler-icon-field__static {
+    cursor: not-allowed;
+}
+
 .tabler-icon-field .icon-picker--icon svg {
     display: block;
     width: 20px;
@@ -166,6 +171,20 @@
     min-height: 0;
     overflow-y: auto;
     padding: 16px 20px;
+}
+
+/* Recently used shortcuts, divided off from the results below */
+.tabler-icon-modal__recents {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--hairline-color, #e3e5e8);
+}
+
+.tabler-icon-modal__recents-title {
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--light-text-color, #606d7b);
 }
 
 .tabler-icon-modal__grid {

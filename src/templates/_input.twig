@@ -1,14 +1,25 @@
+{% set static = static ?? false %}
+
 <div id="{{ id }}" class="tabler-icon-field icon-picker">
-    {{ hiddenInput(name ~ '[name]', value.name ?? '', { data: { name: true } }) }}
-    {{ hiddenInput(name ~ '[variant]', value.variant ?? '', { data: { variant: true } }) }}
+    {% if static %}
+        {# Read-only (revisions, restricted layouts): the icon alone, with no
+           value to post and nothing to click #}
+        <div class="icon-picker--icon tabler-icon-field__static"
+            {%- if value %} role="img" title="{{ value.label }}" aria-label="{{ value.label }}"{% endif %}>
+            {%- if value %}{{ value.svg() }}{% endif -%}
+        </div>
+    {% else %}
+        {{ hiddenInput(name ~ '[name]', value.name ?? '', { data: { name: true } }) }}
+        {{ hiddenInput(name ~ '[variant]', value.variant ?? '', { data: { variant: true } }) }}
 
-    {# The preview box is a real button so changing the icon stays keyboard-accessible #}
-    <button type="button" class="icon-picker--icon" data-preview
-        title="{{ value ? value.label : 'Choose icon'|t('tabler') }}"
-        aria-label="{{ value ? 'Change icon: {label}'|t('tabler', { label: value.label }) : 'Choose icon'|t('tabler') }}">
-        {%- if value %}{{ value.svg() }}{% endif -%}
-    </button>
+        {# The preview box is a real button so changing the icon stays keyboard-accessible #}
+        <button type="button" class="icon-picker--icon" data-preview
+            title="{{ value ? value.label : 'Choose icon'|t('tabler') }}"
+            aria-label="{{ value ? 'Change icon: {label}'|t('tabler', { label: value.label }) : 'Choose icon'|t('tabler') }}">
+            {%- if value %}{{ value.svg() }}{% endif -%}
+        </button>
 
-    <button type="button" class="btn{% if value %} hidden{% endif %}" data-choose>{{ 'Choose'|t('tabler') }}</button>
-    <button type="button" class="btn{% if not value %} hidden{% endif %}" data-remove>{{ 'Remove'|t('tabler') }}</button>
+        <button type="button" class="btn{% if value %} hidden{% endif %}" data-choose>{{ 'Choose'|t('tabler') }}</button>
+        <button type="button" class="btn{% if not value %} hidden{% endif %}" data-remove>{{ 'Remove'|t('tabler') }}</button>
+    {% endif %}
 </div>

@@ -32,6 +32,27 @@
 
     const CHUNK_SIZE = 210;
 
+    // Recently used icons, shared by every field and scoped to the install by
+    // Craft's storage helpers
+    const RECENTS_KEY = 'tabler.recents';
+    const RECENTS_LIMIT = 10;
+
+    function loadRecents() {
+        let stored;
+        try {
+            stored = Craft.getLocalStorage(RECENTS_KEY, []);
+        } catch (e) {
+            return [];
+        }
+        return Array.isArray(stored) ? stored : [];
+    }
+
+    function rememberRecent(name, variant) {
+        const recents = loadRecents().filter((recent) => recent.name !== name || recent.variant !== variant);
+        recents.unshift({name: name, variant: variant});
+        Craft.setLocalStorage(RECENTS_KEY, recents.slice(0, RECENTS_LIMIT));
+    }
+
     class TablerIconPicker {
         constructor(selector, config) {
             this.container = document.querySelector(selector);
@@ -63,6 +84,7 @@
         open() {
             if (this.modal) {
                 this.modal.show();
+                this.renderRecents(); // another field may have added to the list
                 this.scrollToSelected();
                 this.searchInput.focus();
                 return;
@@ -79,6 +101,7 @@
                         this.randomGlyphEl.textContent = String.fromCodePoint(parseInt(shuffle.o, 16));
                     }
                 }
+                this.renderRecents();
                 this.search('');
                 this.scrollToSelected();
                 this.searchInput.focus();
@@ -220,11 +243,37 @@
                 });
             }
 
-            const $body = $('<div class="tabler-icon-modal__body"><div class="tabler-icon-modal__grid" role="listbox"></div></div>').appendTo($wrap);
+            const $body = $('<div class="tabler-icon-modal__body"/>').appendTo($wrap);
+
+            // Recently used icons live in their own grid above the results: the
+            // results grid indexes its cells against `this.results` positionally,
+            // so extra cells can't share it
+            if (this.config.recents !== false) {
+                const $recents = $(
+                    '<div class="tabler-icon-modal__recents hidden">' +
+                        '<div class="tabler-icon-modal__recents-title">' + Craft.t('tabler', 'Recent') + '</div>' +
+                        '<div class="tabler-icon-modal__grid" role="listbox" aria-label="' + Craft.t('tabler', 'Recently used icons') + '"></div>' +
+                    '</div>'
+                ).appendTo($body);
+
+                this.recentsEl = $recents[0];
+                this.recentsGridEl = $recents.find('.tabler-icon-modal__grid')[0];
+
+                this.recentsGridEl.addEventListener('click', (event) => {
+                    const cell = event.target.closest('.tabler-icon-cell');
+                    if (cell) {
+                        this.select(cell.dataset.name, cell.dataset.variant, cell.dataset.code);
+                    }
+                });
+
+                this.recentsGridEl.addEventListener('keydown', (event) => this.handleRecentsKeydown(event));
+            }
+
+            const $grid = $('<div class="tabler-icon-modal__grid" role="listbox"></div>').appendTo($body);
             const $footer = $('<div class="tabler-icon-modal__footer"><span class="light" data-count></span></div>').appendTo($wrap);
 
             this.searchInput = header.find('input')[0];
-            this.gridEl = $body.find('.tabler-icon-modal__grid')[0];
+            this.gridEl = $grid[0];
             this.bodyEl = $body[0];
             this.countEl = $footer.find('[data-count]')[0];
 
@@ -249,7 +298,11 @@
                         debouncePending = false;
                         this.search(this.searchInput.value);
                     }
-                    this.focusAnchorCell();
+                    if (this.recentsVisible()) {
+                        this.focusRecentCellAt(this.recentsAnchorIndex());
+                    } else {
+                        this.focusAnchorCell();
+                    }
                 }
             });
 
@@ -311,6 +364,101 @@
             this.countEl.textContent = Craft.t('tabler', '{count} icons', {
                 count: this.results.length.toLocaleString(),
             });
+
+            this.updateRecentsVisibility();
+        }
+
+        // Recently used icons, resolved against the field's own entries so a
+        // style-restricted field never offers one it can't store
+        renderRecents() {
+            if (!this.recentsGridEl || !this.entries) {
+                return;
+            }
+
+            const byKey = new Map(this.entries.map((entry) => [entry.name + '|' + entry.variant, entry]));
+            const entries = loadRecents()
+                .map((recent) => byKey.get(recent.name + '|' + recent.variant))
+                .filter(Boolean);
+
+            this.recentsGridEl.innerHTML = '';
+            for (const entry of entries) {
+                this.recentsGridEl.appendChild(this.buildCell(entry));
+            }
+            if (entries.length) {
+                this.recentsGridEl.children[0].tabIndex = 0;
+            }
+
+            this.updateRecentsVisibility();
+        }
+
+        // Suggestions only make sense against an unfiltered grid; once the
+        // author narrows the results, they'd just be noise
+        updateRecentsVisibility() {
+            if (!this.recentsGridEl) {
+                return;
+            }
+            const show = this.recentsGridEl.children.length &&
+                !this.searchInput.value.trim() &&
+                !this.categoryFilter;
+            this.recentsEl.classList.toggle('hidden', !show);
+        }
+
+        recentsVisible() {
+            return !!this.recentsEl && !this.recentsEl.classList.contains('hidden');
+        }
+
+        recentsAnchorIndex() {
+            const anchor = this.recentsGridEl.querySelector('[tabindex="0"]');
+            return anchor ? [].indexOf.call(this.recentsGridEl.children, anchor) : 0;
+        }
+
+        focusRecentCellAt(index) {
+            const target = this.recentsGridEl.children[index];
+            if (!target) {
+                return;
+            }
+            const previous = this.recentsGridEl.querySelector('[tabindex="0"]');
+            if (previous) {
+                previous.tabIndex = -1;
+            }
+            target.tabIndex = 0;
+            target.focus();
+        }
+
+        // Same roving tabindex as the results grid, but arrowing off either end
+        // hands focus back to the search field or on to the results
+        handleRecentsKeydown(event) {
+            if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) {
+                return;
+            }
+
+            const cells = this.recentsGridEl.children;
+            if (!cells.length) {
+                return;
+            }
+
+            const active = document.activeElement.closest('.tabler-icon-cell');
+            let index = Math.max(0, [].indexOf.call(cells, active));
+            const columns = getComputedStyle(this.recentsGridEl).gridTemplateColumns.split(' ').length;
+
+            switch (event.key) {
+                case 'ArrowRight': index += 1; break;
+                case 'ArrowLeft': index -= 1; break;
+                case 'ArrowDown': index += columns; break;
+                case 'ArrowUp': index -= columns; break;
+                case 'Home': index = 0; break;
+                case 'End': index = cells.length - 1; break;
+            }
+
+            event.preventDefault();
+
+            if (index < 0) {
+                this.searchInput.focus();
+            } else if (index >= cells.length) {
+                this.focusAnchorCell();
+            } else {
+                this.focusRecentCellAt(index);
+            }
         }
 
         // Scroll the selection into view and make it the Tab entry point.
@@ -365,16 +513,14 @@
         // Sync the highlight on already-rendered cells (they only get it at
         // render time otherwise)
         markSelectedCell(name, variant) {
-            if (!this.gridEl) {
+            if (!this.bodyEl) {
                 return;
             }
-            const previous = this.gridEl.querySelector('.tabler-icon-cell--selected');
-            if (previous) {
+            for (const previous of this.bodyEl.querySelectorAll('.tabler-icon-cell--selected')) {
                 previous.classList.remove('tabler-icon-cell--selected');
             }
             if (name) {
-                const cell = this.gridEl.querySelector(`[data-name="${name}"][data-variant="${variant}"]`);
-                if (cell) {
+                for (const cell of this.bodyEl.querySelectorAll(`[data-name="${name}"][data-variant="${variant}"]`)) {
                     cell.classList.add('tabler-icon-cell--selected');
                 }
             }
@@ -469,10 +615,33 @@
                 case 'End': index = this.results.length - 1; break;
             }
 
+            event.preventDefault();
+
+            // Up and out of the top row lands in the recents, when it's showing
+            if (index < 0 && this.recentsVisible()) {
+                this.focusRecentCellAt(this.recentsAnchorIndex());
+                return;
+            }
+
             index = Math.max(0, Math.min(index, this.results.length - 1));
 
-            event.preventDefault();
             this.focusCellAt(index);
+        }
+
+        buildCell(entry) {
+            const cell = document.createElement('button');
+            cell.type = 'button';
+            cell.className = 'tabler-icon-cell';
+            if (entry.name === this.nameInput.value && entry.variant === this.variantInput.value) {
+                cell.classList.add('tabler-icon-cell--selected');
+            }
+            cell.title = label(entry.name, entry.variant);
+            cell.tabIndex = -1;
+            cell.dataset.name = entry.name;
+            cell.dataset.variant = entry.variant;
+            cell.dataset.code = entry.code;
+            cell.appendChild(glyph(entry.code, entry.variant));
+            return cell;
         }
 
         renderMore() {
@@ -482,24 +651,9 @@
 
             const fragment = document.createDocumentFragment();
             const end = Math.min(this.rendered + CHUNK_SIZE, this.results.length);
-            const selectedName = this.nameInput.value;
-            const selectedVariant = this.variantInput.value;
 
             for (let i = this.rendered; i < end; i++) {
-                const entry = this.results[i];
-                const cell = document.createElement('button');
-                cell.type = 'button';
-                cell.className = 'tabler-icon-cell';
-                if (entry.name === selectedName && entry.variant === selectedVariant) {
-                    cell.classList.add('tabler-icon-cell--selected');
-                }
-                cell.title = label(entry.name, entry.variant);
-                cell.tabIndex = -1;
-                cell.dataset.name = entry.name;
-                cell.dataset.variant = entry.variant;
-                cell.dataset.code = entry.code;
-                cell.appendChild(glyph(entry.code, entry.variant));
-                fragment.appendChild(cell);
+                fragment.appendChild(this.buildCell(this.results[i]));
             }
 
             this.rendered = end;
@@ -516,6 +670,7 @@
             this.variantInput.value = variant;
             this.nameInput.dispatchEvent(new Event('change', {bubbles: true}));
 
+            rememberRecent(name, variant);
             this.markSelectedCell(name, variant);
 
             this.previewEl.innerHTML = '';

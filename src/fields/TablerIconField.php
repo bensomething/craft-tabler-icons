@@ -38,6 +38,11 @@ class TablerIconField extends Field implements InlineEditableFieldInterface, Thu
      */
     public bool $showRandomButton = false;
 
+    /**
+     * @var bool Show the recently used icons row in the picker
+     */
+    public bool $showRecents = true;
+
     public function __construct(array $config = [])
     {
         unset($config['buttonStyle']); // retired setting
@@ -68,7 +73,7 @@ class TablerIconField extends Field implements InlineEditableFieldInterface, Thu
     {
         $rules = parent::defineRules();
         $rules[] = [['iconStyle'], 'in', 'range' => [self::STYLE_ALL, self::STYLE_OUTLINE, self::STYLE_FILLED]];
-        $rules[] = [['showCategories', 'showRandomButton'], 'boolean'];
+        $rules[] = [['showCategories', 'showRandomButton', 'showRecents'], 'boolean'];
         return $rules;
     }
 
@@ -142,6 +147,7 @@ class TablerIconField extends Field implements InlineEditableFieldInterface, Thu
             'style' => $this->iconStyle,
             'categories' => $this->showCategories,
             'random' => $this->showRandomButton,
+            'recents' => $this->showRecents,
         ];
 
         $view->registerJs(
@@ -152,6 +158,24 @@ class TablerIconField extends Field implements InlineEditableFieldInterface, Thu
             'id' => $id,
             'name' => $this->handle,
             'value' => $value,
+        ]);
+    }
+
+    /**
+     * Read-only rendering. The default implementation just disables the input's
+     * buttons, which leaves a dead Choose/Remove pair on screen; like Craft's
+     * own Icon field, render the icon on its own instead.
+     */
+    public function getStaticHtml(mixed $value, ElementInterface $element): string
+    {
+        $view = Craft::$app->getView();
+        $view->registerAssetBundle(PickerAsset::class); // for the preview box styling
+
+        return $view->renderTemplate('tabler/_input.twig', [
+            'id' => Html::id($this->handle),
+            'name' => $this->handle,
+            'value' => $value,
+            'static' => true,
         ]);
     }
 
@@ -282,6 +306,12 @@ class TablerIconField extends Field implements InlineEditableFieldInterface, Thu
             'id' => 'showRandomButton',
             'name' => 'showRandomButton',
             'on' => $this->showRandomButton,
+        ]) . Cp::lightswitchFieldHtml([
+            'label' => Craft::t('tabler', 'Show Recently Used'),
+            'instructions' => Craft::t('tabler', 'Shows the author’s ten most recently selected icons above the search results.'),
+            'id' => 'showRecents',
+            'name' => 'showRecents',
+            'on' => $this->showRecents,
         ]);
     }
 }
