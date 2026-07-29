@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.10.1 - 2026-07-29
+
+- Updated to Tabler Icons 3.46.0, adding 18 icons and redrawing 15 others.
+
 ## 1.10.0 - 2026-07-15
 
 - Added GraphQL support: Tabler Icon fields resolve to a `tabler_Icon` type with `name`, `variant`, `label`, `classes`, and `svg(size)` subfields.
