@@ -2,12 +2,12 @@
 
 ## 1.10.1 - 2026-07-29
 
-- Updated to Tabler Icons 3.46.0, adding 18 icons and redrawing 15 others.
+- Updated to [Tabler Icons 3.46.0](https://github.com/tabler/tabler-icons/releases/tag/v3.46.0), adding 18 icons and redrawing 15 others.
 
 ## 1.10.0 - 2026-07-15
 
 - Added GraphQL support: Tabler Icon fields resolve to a `tabler_Icon` type with `name`, `variant`, `label`, `classes`, and `svg(size)` subfields.
-- Updated to Tabler Icons 3.45.0, adding 20 icons. Tabler corrected the spelling of 10 icon names (e.g. `mood-confuzed` → `mood-confused`). Saved values using the old names still resolve, and update themselves the next time the element is saved.
+- Updated to [Tabler Icons 3.45.0](https://github.com/tabler/tabler-icons/releases/tag/v3.45.0), adding 20 icons. Tabler corrected the spelling of 10 icon names (e.g. `mood-confuzed` → `mood-confused`). Saved values using the old names still resolve, and update themselves the next time the element is saved.
 
 ## 1.9.1 - 2026-07-14
 
