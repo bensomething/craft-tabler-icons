@@ -32,7 +32,14 @@ The full Tabler icon set is bundled with the plugin, which makes it around 25MB 
 
 Create a field of type **Tabler Icon** and add it to a field layout. Authors get a **Choose** button that opens a searchable icon grid with a category filter; once an icon is selected, clicking its preview reopens the picker.
 
-**Field settings** — *Icon Style* controls whether authors can pick from both styles, outline only, or filled only. Selecting **Outline and filled** will display **Outline** and **Filled** tabs in the icon picker. *Show Recently Used* puts an author’s ten most recently picked icons above the results (they’re stored in the browser and shared across every Tabler Icon field), and hides them as soon as a search or category filter narrows the grid.
+### Field Settings
+
+| Setting | Default | What it does |
+| --- | --- | --- |
+| **Icon Style** | Outline and filled | Which styles authors can pick from. **Outline and filled** adds **Outline** and **Filled** tabs to the picker; the other two options limit it to one style and drop the tabs. |
+| **Show Categories Dropdown** | On | Shows the category filter in the picker. |
+| **Show Random Button** | Off | Adds a button that highlights a random icon from the current results. |
+| **Show Recently Used** | On | Puts the author’s ten most recently picked icons above the results, hidden as soon as a search or category filter narrows the grid. The list lives in the browser and is shared across every Tabler Icon field. |
 
 ## Templating
 
