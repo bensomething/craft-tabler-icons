@@ -41,7 +41,8 @@
     },
     "require-dev": {
         "craftcms/ecs": "dev-main",
-        "craftcms/phpstan": "dev-main"
+        "craftcms/phpstan": "dev-main",
+        "phpstan/phpstan": "^1.12"
     },
     "scripts": {
         "check-cs": "ecs check --ansi",
