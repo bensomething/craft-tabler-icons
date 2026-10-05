@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.11.3 - 2026-10-05
+
+### Changed
+
+- Updated to [Tabler Icons 3.49.0](https://github.com/tabler/tabler-icons/releases/tag/v3.49.0), adding 18 icons and redrawing 3 others. Tabler also rewrote the search keywords for every icon, so picker search results will differ from previous versions.
+
 ## 1.11.2 - 2026-09-23
 
 ### Changed
