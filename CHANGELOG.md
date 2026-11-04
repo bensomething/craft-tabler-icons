@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- On Craft 5.12+, Tabler icons are available in Craft's native Icon field, as the **Tabler** and **Tabler (Filled)** icon sets.
+- Tabler Icon fields and the `tabler()` Twig function accept native Icon field values from the Tabler icon sets (`tabler:heart`, `tabler-filled:heart`), so a native Icon field can be switched to a Tabler Icon field without losing its Tabler icons.
+
 ## 1.11.4 - 2026-10-28
 
 ### Changed

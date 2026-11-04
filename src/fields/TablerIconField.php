@@ -83,10 +83,15 @@ class TablerIconField extends Field implements InlineEditableFieldInterface, Thu
             return $value;
         }
 
+        // a native Icon field value, e.g. after switching a field's type
+        if (is_a($value, 'craft\fields\data\IconData')) {
+            $value = $value->serialize();
+        }
+
         if (is_string($value) && $value !== '') {
             $decoded = Json::decodeIfJson($value);
             if (is_string($decoded)) {
-                return new Icon($decoded);
+                return Icon::fromSetValue($decoded) ?? new Icon($decoded);
             }
             $value = $decoded;
         }
@@ -198,26 +203,7 @@ class TablerIconField extends Field implements InlineEditableFieldInterface, Thu
             'defaults' => false,
         ]);
 
-        return $svg !== '' ? self::hardenSvgShapes($svg) : null;
-    }
-
-    /**
-     * Inline per-shape fill/stroke-width so CP hover/selection rules (which
-     * force-fill SVG shapes white for Craft's solid icons) can't fill Tabler's
-     * bounding path or zero its strokes. Needed inline — thumbs render on pages
-     * without the plugin stylesheet.
-     */
-    private static function hardenSvgShapes(string $svg): string
-    {
-        return preg_replace_callback(
-            '/<(path|circle|rect|line|polyline|polygon|ellipse)\b([^>]*?)\/?>/',
-            function(array $match): string {
-                $fill = preg_match('/\bfill="([^"]*)"/', $match[2], $f) ? $f[1] : 'inherit';
-                $style = sprintf('fill:%s;stroke-width:inherit', $fill);
-                return sprintf('<%s%s style="%s" />', $match[1], rtrim($match[2]), $style);
-            },
-            $svg,
-        );
+        return $svg !== '' ? Icon::hardenSvgShapes($svg) : null;
     }
 
     public function getPreviewHtml(mixed $value, ElementInterface $element): string

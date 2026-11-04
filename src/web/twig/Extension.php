@@ -44,11 +44,22 @@ class Extension extends AbstractExtension
         );
     }
 
-    public function icon(string|Icon $name, ?string $variant = null): Icon
+    public function icon(mixed $name, ?string $variant = null): Icon
     {
         // pass a field value straight through
         if ($name instanceof Icon) {
             return $name;
+        }
+
+        // a native Icon field value from a Tabler set (Craft 5.12+)
+        if (is_a($name, 'craft\fields\data\IconData')) {
+            $name = $name->serialize();
+        }
+
+        $name = (string)$name;
+
+        if ($variant === null && ($fromSet = Icon::fromSetValue($name))) {
+            return $fromSet;
         }
 
         // '-filled' suffix selects the filled variant (unambiguous — no outline

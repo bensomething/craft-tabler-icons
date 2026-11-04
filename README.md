@@ -10,6 +10,7 @@ A field type for selecting a [Tabler icon](https://tabler.io/icons) from a searc
 - `|tabler` filter renders `{icon:name}` tokens in plain and rich text fields
 - Use an icon field as an entry type’s Thumbnail Source
 - Field setting to limit the picker to outline-only or filled-only icons
+- Tabler icons in Craft's native Icon field (Craft 5.12+)
 
 ## Requirements
 
@@ -168,6 +169,22 @@ If you load the Tabler webfont on the front end yourself, `classes()` gives you 
 ```twig
 <i class="{{ entry.myIcon.classes() }}"></i>   {# "ti ti-ad-off" / "ti ti-heart-filled" #}
 ```
+
+## Craft's Native Icon Field
+
+On Craft 5.12 and later, the plugin also registers Tabler as two icon sets for Craft's built-in **Icon** field: **Tabler** (outline) and **Tabler (Filled)**. Enable them in the field's **Icon Sets** setting. Values are stored as `tabler:heart` or `tabler-filled:heart`.
+
+Craft's picker renders every icon in each enabled set when it opens, and only caches that list for Font Awesome. With 6,000+ Tabler icons, expect it to take a few seconds to open. Searching is quick.
+
+Use the native field if you want Tabler icons alongside Font Awesome or your own `customIconPath` icons in one picker. Use the **Tabler Icon** field for the faster picker (categories, recently used icons, outline/filled tabs), the Icon object's attributes and `svgDefaults`, and the extra GraphQL data.
+
+Native values work with the plugin's tools too:
+
+```twig
+{{ tabler(entry.nativeIcon).svg({ size: 20 }) }}
+```
+
+Changing a native Icon field to a **Tabler Icon** field keeps any Tabler icons already selected. Font Awesome and other icon sets' values don't carry over. Switching the other way isn't supported: a native Icon field can't read Tabler Icon field values.
 
 ## License
 

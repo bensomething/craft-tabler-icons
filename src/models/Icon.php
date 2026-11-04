@@ -2,6 +2,7 @@
 
 namespace bensomething\tabler\models;
 
+use bensomething\tabler\iconsets\TablerIconSet;
 use Craft;
 use craft\helpers\Html;
 use craft\web\twig\SafeHtml;
@@ -36,6 +37,41 @@ class Icon implements \JsonSerializable, \Stringable, SafeHtml
         public string $variant = self::VARIANT_OUTLINE,
     ) {
         $this->name = self::RENAMED[$name] ?? $name;
+    }
+
+    /**
+     * Parses a native icon set value (`tabler:heart`, `tabler-filled:heart`),
+     * as stored by Craft's Icon field when using the Tabler icon sets.
+     */
+    public static function fromSetValue(string $value): ?self
+    {
+        if (!preg_match('/^(tabler|tabler-filled):([a-z0-9-]+)$/', $value, $match)) {
+            return null;
+        }
+
+        return new self(
+            $match[2],
+            $match[1] === TablerIconSet::HANDLE_FILLED ? self::VARIANT_FILLED : self::VARIANT_OUTLINE,
+        );
+    }
+
+    /**
+     * Inline per-shape fill/stroke-width so CP hover/selection rules (which
+     * force-fill SVG shapes white for Craft's solid icons) can't fill Tabler's
+     * bounding path or zero its strokes. Needed inline: thumbs and native
+     * pickers render on pages without the plugin stylesheet.
+     */
+    public static function hardenSvgShapes(string $svg): string
+    {
+        return preg_replace_callback(
+            '/<(path|circle|rect|line|polyline|polygon|ellipse)\b([^>]*?)\/?>/',
+            function(array $match): string {
+                $fill = preg_match('/\bfill="([^"]*)"/', $match[2], $f) ? $f[1] : 'inherit';
+                $style = sprintf('fill:%s;stroke-width:inherit', $fill);
+                return sprintf('<%s%s style="%s" />', $match[1], rtrim($match[2]), $style);
+            },
+            $svg,
+        );
     }
 
     /**
