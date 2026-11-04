@@ -174,7 +174,7 @@ If you load the Tabler webfont on the front end yourself, `classes()` gives you 
 
 On Craft 5.12 and later, the plugin also registers Tabler as two icon sets for Craft's built-in **Icon** field: **Tabler** (outline) and **Tabler (Filled)**. Enable them in the field's **Icon Sets** setting. Values are stored as `tabler:heart` or `tabler-filled:heart`.
 
-Craft's picker renders every icon in each enabled set when it opens, and only caches that list for Font Awesome. With 6,000+ Tabler icons, expect it to take a few seconds to open. Searching is quick.
+Craft's picker renders every icon in each enabled set when it opens, and only caches that list for Font Awesome. With 6,000+ Tabler icons, expect the first open to take a couple of seconds. Searching is quick. In Safari, the picker can also feel sluggish to open and close with the outline set enabled; Chrome and Firefox handle it smoothly.
 
 Use the native field if you want Tabler icons alongside Font Awesome or your own `customIconPath` icons in one picker. Use the **Tabler Icon** field for the faster picker (categories, recently used icons, outline/filled tabs), the Icon object's attributes and `svgDefaults`, and the extra GraphQL data.
 
