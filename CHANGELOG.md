@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.12.1 - 2026-11-09
+
+### Changed
+
+- Updated to [Tabler Icons 3.51.0](https://github.com/tabler/tabler-icons/releases/tag/v3.51.0), adding 30 icons and redrawing 2 others.
+
 ## 1.12.0 - 2026-11-04
 
 ### Added
