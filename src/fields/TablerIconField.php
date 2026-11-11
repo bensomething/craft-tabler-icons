@@ -190,7 +190,9 @@ class TablerIconField extends Field implements InlineEditableFieldInterface, Thu
      * CP's `.thumb svg` rules and flex shrinking. Craft requests 30 (chips/rows)
      * or 120 (cards); 22/24px keeps it small like the native Icon field.
      */
-    public function getThumbHtml(mixed $value, ElementInterface $element, int $size): ?string
+    // Loosely typed so one signature satisfies both Craft 5's interface and
+    // Craft 6's (which takes a CraftCms element and an ImageTransformMode).
+    public function getThumbHtml(mixed $value, mixed $element, int $size, mixed $mode = null): ?string
     {
         if (!$value instanceof Icon) {
             return null;

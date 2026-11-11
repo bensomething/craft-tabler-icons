@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Added support for Craft CMS 6, via the Yii2 adapter (`craftcms/yii2-adapter`).
+
 ## 1.12.1 - 2026-11-09
 
 ### Changed
