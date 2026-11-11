@@ -20,4 +20,20 @@ class PickerAsset extends AssetBundle
     public $css = [
         'picker.css',
     ];
+
+    public function init(): void
+    {
+        parent::init();
+
+        // Craft 6 dropped the legacy CP control styles (.btn, .select, .text…)
+        // and the Craft 5 CSS variables picker.css leans on; restyle on top
+        if (self::isCraft6()) {
+            $this->css[] = 'picker-craft6.css';
+        }
+    }
+
+    public static function isCraft6(): bool
+    {
+        return class_exists('CraftCms\\Cms\\Cms');
+    }
 }

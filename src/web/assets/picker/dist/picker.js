@@ -17,6 +17,26 @@
         return indexPromise;
     }
 
+    // Craft 6 navigates the CP without full page loads and tells the server
+    // which bundles it already has, so once our <link> tags are dropped the
+    // server never sends them again while this script lives on. Put back any
+    // that went missing (harmless on Craft 5, where they're always present).
+    function ensureStyles(urls) {
+        for (const url of urls || []) {
+            const href = new URL(url, location.href);
+            const present = Array.from(document.querySelectorAll('link[rel="stylesheet"]')).some((link) => {
+                const existing = new URL(link.href, location.href);
+                return existing.origin === href.origin && existing.pathname === href.pathname;
+            });
+            if (!present) {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = href.href;
+                document.head.appendChild(link);
+            }
+        }
+    }
+
     function glyph(codepoint, variant) {
         const span = document.createElement('span');
         span.className = 'tabler-glyph' + (variant === 'filled' ? ' tabler-glyph--filled' : '');
@@ -62,6 +82,7 @@
             this.container.dataset.tablerInitialized = '1';
 
             this.config = config;
+            ensureStyles(config.cssUrls);
             this.nameInput = this.container.querySelector('[data-name]');
             this.variantInput = this.container.querySelector('[data-variant]');
             this.previewEl = this.container.querySelector('[data-preview]');
@@ -82,6 +103,8 @@
         }
 
         open() {
+            ensureStyles(this.config.cssUrls);
+
             if (this.modal) {
                 this.modal.show();
                 this.renderRecents(); // another field may have added to the list

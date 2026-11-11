@@ -149,6 +149,7 @@ class TablerIconField extends Field implements InlineEditableFieldInterface, Thu
 
         $config = [
             'indexUrl' => $bundle->baseUrl . '/icons.json',
+            'cssUrls' => array_map(fn(string $file) => $bundle->baseUrl . '/' . $file, $bundle->css),
             'style' => $this->iconStyle,
             'categories' => $this->showCategories,
             'random' => $this->showRandomButton,

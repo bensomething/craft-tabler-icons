@@ -6,6 +6,12 @@
 
 - Added support for Craft CMS 6, via the Yii2 adapter (`craftcms/yii2-adapter`).
 
+### Fixed
+
+- Fixed the field and picker styling on Craft 6.
+- Fixed the picker opening without a backdrop from slideouts and Live Preview on Craft 6.
+- Fixed the picker losing its styles and icon font after navigating around the Craft 6 control panel.
+
 ## 1.12.1 - 2026-11-09
 
 ### Changed

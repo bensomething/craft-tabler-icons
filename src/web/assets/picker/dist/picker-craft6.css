@@ -1,0 +1,185 @@
+/* Craft 6 only (registered by PickerAsset alongside picker.css).
+   Craft 6 removed the legacy CP control styles this picker builds on
+   (.btn, .btngroup, .select, .text, .light, .icon-picker--icon) and the
+   Craft 5 CSS variables, so rebuild them here from Craft 6's --c-* tokens. */
+
+/* Point picker.css's Craft 5 variables at their Craft 6 equivalents */
+.tabler-icon-field,
+.tabler-icon-modal {
+    --gray-050: var(--c-color-neutral-fill-quiet);
+    --hairline-color: var(--c-color-neutral-border-quiet);
+    --text-color: var(--c-text-default);
+    --light-text-color: var(--c-text-quiet);
+    --focus-color: var(--c-color-focus-outline);
+    --medium-border-radius: var(--c-radius-sm);
+}
+
+/* Garnish's .modal-shade sits on --c-layer-shade (99), beneath slideouts and
+   Live Preview (--c-layer-overlay, 100), so the picker opened from either
+   floats with no backdrop and the page behind stays clickable. Lift our own
+   shade onto the overlay layer; it's appended after them, so it wins. */
+.modal-shade:has(+ .modal.tabler-icon-modal) {
+    z-index: var(--c-layer-overlay, 100);
+}
+
+/* Field input */
+
+.tabler-icon-field.icon-picker {
+    display: flex;
+    align-items: center;
+    gap: var(--c-spacing-sm, 8px);
+}
+
+.tabler-icon-field .icon-picker--icon {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--c-size-control-md);
+    height: var(--c-size-control-md);
+    border: 1px solid var(--c-color-neutral-border-quiet);
+    border-radius: var(--c-radius-sm);
+    background-color: var(--c-color-neutral-fill-quiet);
+    color: var(--c-color-neutral-on-quiet);
+    font: inherit;
+}
+
+.tabler-icon-field button.icon-picker--icon:hover {
+    background-color: color-mix(in oklab, var(--c-color-neutral-fill-quiet), var(--c-color-mix-hover));
+}
+
+.tabler-icon-field button.icon-picker--icon:focus-visible {
+    outline: var(--c-focus-outline-width) solid var(--c-color-focus-outline);
+    outline-offset: var(--c-focus-outline-offset, 2px);
+}
+
+/* Buttons (field Choose/Remove, modal filters and Random) */
+
+.tabler-icon-field .btn,
+.tabler-icon-modal .btn {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--c-spacing-sm, 8px);
+    min-width: var(--c-size-control-md);
+    height: var(--c-size-control-md);
+    margin: 0;
+    padding: 0 var(--c-form-control-spacing-inline, 12px);
+    border: 1px solid var(--c-color-neutral-border-quiet);
+    border-radius: var(--c-form-control-radius, var(--c-radius-md));
+    background-color: var(--c-color-neutral-fill-normal);
+    color: var(--c-color-neutral-on-normal);
+    font: inherit;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    appearance: none;
+}
+
+.tabler-icon-field .btn.hidden,
+.tabler-icon-modal .btn.hidden {
+    display: none;
+}
+
+.tabler-icon-field .btn:hover,
+.tabler-icon-modal .btn:hover {
+    background-color: color-mix(in oklab, var(--c-color-neutral-fill-normal), var(--c-color-mix-hover));
+}
+
+.tabler-icon-field .btn:focus-visible,
+.tabler-icon-modal .btn:focus-visible {
+    outline: var(--c-focus-outline-width) solid var(--c-color-focus-outline);
+    outline-offset: var(--c-focus-outline-offset, 2px);
+}
+
+/* Outline / Filled: one segmented control, the selected half filled loud
+   the way craft-button-group marks its active button */
+.tabler-icon-modal .btngroup {
+    display: inline-flex;
+}
+
+.tabler-icon-modal .btngroup .btn:not(:first-child) {
+    margin-inline-start: -1px;
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+}
+
+.tabler-icon-modal .btngroup .btn:not(:last-child) {
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+}
+
+.tabler-icon-modal .btngroup .btn.active {
+    position: relative;
+    border-color: var(--c-color-neutral-border-loud);
+    background-color: var(--c-color-neutral-fill-loud);
+    color: var(--c-color-neutral-on-loud);
+}
+
+.tabler-icon-modal .btngroup .btn:focus-visible {
+    position: relative;
+    z-index: 1;
+}
+
+/* Search and category controls */
+
+.tabler-icon-modal input.text,
+.tabler-icon-modal .select select {
+    box-sizing: border-box;
+    width: 100%;
+    height: var(--c-form-control-height, var(--c-size-control-md));
+    margin: 0;
+    padding: 0 var(--c-form-control-spacing-inline, 12px);
+    border: var(--c-form-control-border-width, 1px) var(--c-form-control-border-style, solid) var(--c-form-control-border-color);
+    border-radius: var(--c-form-control-radius, var(--c-radius-md));
+    background-color: var(--c-form-control-fill);
+    color: var(--c-form-control-text, var(--c-text-default));
+    font: inherit;
+    appearance: none;
+}
+
+.tabler-icon-modal input.text::placeholder {
+    color: var(--c-form-control-placeholder, var(--c-text-quiet));
+}
+
+.tabler-icon-modal input.text:focus-visible,
+.tabler-icon-modal .select select:focus-visible {
+    outline: var(--c-focus-outline-width) solid var(--c-color-focus-outline);
+    outline-offset: -1px;
+}
+
+.tabler-icon-modal .select {
+    position: relative;
+}
+
+.tabler-icon-modal .select select {
+    padding-inline-end: calc(var(--c-form-control-spacing-inline, 12px) + 16px);
+    cursor: pointer;
+}
+
+/* Chevron, drawn in the current text colour */
+.tabler-icon-modal .select::after {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: var(--c-form-control-spacing-inline, 12px);
+    width: 10px;
+    margin-block: auto;
+    height: 6px;
+    background-color: currentColor;
+    color: var(--c-text-quiet);
+    pointer-events: none;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* Text helpers */
+
+.tabler-icon-modal .light {
+    color: var(--c-text-quiet);
+}
+
+.tabler-icon-modal .error {
+    color: var(--c-color-danger-on-quiet);
+}
