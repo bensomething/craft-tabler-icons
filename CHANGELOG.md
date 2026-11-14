@@ -2,6 +2,10 @@
 
 ## 1.13.1 - 2026-11-14
 
+### Added
+
+- Added the `nativeIconSets` config setting. Set it to `false` to stop registering the Tabler icon sets with Craft's native icon pickers.
+
 ### Changed
 
 - Updated to [Tabler Icons 3.52.0](https://github.com/tabler/tabler-icons/releases/tag/v3.52.0), adding 259 icons and redrawing 2 others.

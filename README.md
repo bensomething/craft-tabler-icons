@@ -5,7 +5,7 @@ A field type for selecting a [Tabler icon](https://tabler.io/icons) from a searc
 - 5,000+ outline icons and 1,000+ filled icons, bundled with the plugin
 - Fast picker: search by name, tag, or category, outline/filled tabs, recently used icons, full keyboard navigation, and an optional random button
 - Inline SVG rendering with custom attributes, plays nicely with Tailwind
-- Site-wide rendering defaults via `config/tabler.php`
+- Site-wide rendering defaults and a native icon set switch via `config/tabler.php`
 - `tabler()` Twig function for hardcoding icons without a field
 - `|tabler` filter renders `{icon:name}` tokens in plain and rich text fields
 - Use an icon field as an entry type’s Thumbnail Source
@@ -47,6 +47,18 @@ Create a field of type **Tabler Icon** and add it to a field layout. Authors get
 On Craft 5.12 and later, the plugin also registers Tabler as two icon sets for Craft's built-in **Icon** field: **Tabler** (outline) and **Tabler (Filled)**. Enable them in the field's **Icon Sets** setting. Values are stored as `tabler:heart` or `tabler-filled:heart`.
 
 Craft's picker renders every icon in each enabled set when it opens, and only caches that list for Font Awesome. With 6,000+ Tabler icons, expect the first open to take a couple of seconds. Searching is quick. In Safari, the picker can also feel sluggish to open and close with the outline set enabled; Chrome and Firefox handle it smoothly.
+
+To hide the Tabler sets from Craft's native pickers altogether (including the icon pickers for entry types and sections), set `nativeIconSets` to `false` in `config/tabler.php`:
+
+```php
+<?php
+
+return [
+    'nativeIconSets' => false,
+];
+```
+
+Switch any native Icon fields that use the Tabler sets over to another set first. Icons already chosen from the Tabler sets stop displaying in the control panel, though `tabler()` still renders those `tabler:` values on the front end.
 
 Use the native field if you want Tabler icons alongside Font Awesome or your own `customIconPath` icons in one picker. Use the **Tabler Icon** field for the faster picker (categories, recently used icons, outline/filled tabs), the Icon object's attributes and `svgDefaults`, and the extra GraphQL data.
 

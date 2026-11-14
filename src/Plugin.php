@@ -30,7 +30,9 @@ class Plugin extends \craft\base\Plugin
         );
 
         // Custom icon sets arrived in Craft 5.12
-        if (class_exists(Icons::class)) {
+        $nativeIconSets = Craft::$app->getConfig()->getConfigFromFile('tabler')['nativeIconSets'] ?? true;
+
+        if ($nativeIconSets && class_exists(Icons::class)) {
             Event::on(
                 Icons::class,
                 Icons::EVENT_REGISTER_ICON_SETS,
