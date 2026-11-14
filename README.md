@@ -48,17 +48,23 @@ On Craft 5.12 and later, the plugin also registers Tabler as two icon sets for C
 
 Craft's picker renders every icon in each enabled set when it opens, and only caches that list for Font Awesome. With 6,000+ Tabler icons, expect the first open to take a couple of seconds. Searching is quick. In Safari, the picker can also feel sluggish to open and close with the outline set enabled; Chrome and Firefox handle it smoothly.
 
-To hide the Tabler sets from Craft's native pickers altogether (including the icon pickers for entry types and sections), set `nativeIconSets` to `false` in `config/tabler.php`:
+Craft also offers every registered icon set in two of its own icon pickers: entry type icons, and the option icons in the settings of Dropdown, Radio Buttons, Checkboxes and other option fields. Control where the Tabler sets appear with `nativeIconSets` in `config/tabler.php`:
 
 ```php
 <?php
 
 return [
-    'nativeIconSets' => false,
+    'nativeIconSets' => 'fields',
 ];
 ```
 
-Switch any native Icon fields that use the Tabler sets over to another set first. Icons already chosen from the Tabler sets stop displaying in the control panel, though `tabler()` still renders those `tabler:` values on the front end.
+| Value | Native Icon fields | Entry type and field option icons |
+| --- | --- | --- |
+| `true` (default) | ✓ | ✓ |
+| `'fields'` | ✓ | — |
+| `false` | — | — |
+
+With `'fields'`, icons already picked for entry types or field options keep displaying; the Tabler sets just stop being offered there. Before switching to `false`, move any native Icon fields that use the Tabler sets over to another set. Icons already chosen from them stop displaying in the control panel, though `tabler()` still renders those `tabler:` values on the front end.
 
 Use the native field if you want Tabler icons alongside Font Awesome or your own `customIconPath` icons in one picker. Use the **Tabler Icon** field for the faster picker (categories, recently used icons, outline/filled tabs), the Icon object's attributes and `svgDefaults`, and the extra GraphQL data.
 

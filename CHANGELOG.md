@@ -4,7 +4,7 @@
 
 ### Added
 
-- Added the `nativeIconSets` config setting. Set it to `false` to stop registering the Tabler icon sets with Craft's native icon pickers.
+- Added the `nativeIconSets` config setting. Set it to `'fields'` to offer the Tabler icon sets in native Icon fields only (not in the icon pickers for entry types and field options), or `false` to stop registering them altogether.
 
 ### Changed
 

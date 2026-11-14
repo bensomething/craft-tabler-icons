@@ -36,7 +36,11 @@ class Plugin extends \craft\base\Plugin
             Event::on(
                 Icons::class,
                 Icons::EVENT_REGISTER_ICON_SETS,
-                function(RegisterIconSetsEvent $event) {
+                function(RegisterIconSetsEvent $event) use ($nativeIconSets) {
+                    if ($nativeIconSets === 'fields' && self::isAllSetsPickerRequest()) {
+                        return;
+                    }
+
                     $event->iconSets[] = new TablerIconSet([
                         'handle' => TablerIconSet::HANDLE_OUTLINE,
                         'name' => Craft::t('tabler', 'Tabler'),
@@ -51,5 +55,20 @@ class Plugin extends \craft\base\Plugin
         }
 
         Craft::$app->getView()->registerTwigExtension(new Extension());
+    }
+
+    /**
+     * Whether this request is loading an icon picker that offers every
+     * registered set (entry type icons, option field option icons).
+     * Native Icon fields ask for their selected sets by handle instead, so the
+     * sets stay registered for them, for saved values, and for field settings.
+     */
+    private static function isAllSetsPickerRequest(): bool
+    {
+        $request = Craft::$app->getRequest();
+
+        return !$request->getIsConsoleRequest()
+            && $request->getActionSegments() === ['app', 'icon-picker-options']
+            && $request->getBodyParam('sets') === '*';
     }
 }
