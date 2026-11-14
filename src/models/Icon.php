@@ -28,6 +28,8 @@ class Icon implements \JsonSerializable, \Stringable, SafeHtml
         'mood-confuzed' => 'mood-confused',
         'physotherapist' => 'physiotherapist',
         'sport-billard' => 'sport-billiard',
+        // 3.52.0
+        'align-justified' => 'align-left-justified',
     ];
 
     private static ?array $svgDefaults = null;
