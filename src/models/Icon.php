@@ -62,13 +62,19 @@ class Icon implements \JsonSerializable, \Stringable, SafeHtml
      * force-fill SVG shapes white for Craft's solid icons) can't fill Tabler's
      * bounding path or zero its strokes. Needed inline: thumbs and native
      * pickers render on pages without the plugin stylesheet.
+     *
+     * Shapes without their own fill take the root `<svg>`'s fill attribute
+     * rather than `inherit`: Craft 6's picker sets `fill: currentColor` on the
+     * `<svg>` element itself, which would otherwise fill every outline shape.
      */
     public static function hardenSvgShapes(string $svg): string
     {
+        $rootFill = preg_match('/<svg\b[^>]*?\bfill="([^"]*)"/', $svg, $r) ? $r[1] : 'inherit';
+
         return preg_replace_callback(
             '/<(path|circle|rect|line|polyline|polygon|ellipse)\b([^>]*?)\/?>/',
-            function(array $match): string {
-                $fill = preg_match('/\bfill="([^"]*)"/', $match[2], $f) ? $f[1] : 'inherit';
+            function(array $match) use ($rootFill): string {
+                $fill = preg_match('/\bfill="([^"]*)"/', $match[2], $f) ? $f[1] : $rootFill;
                 $style = sprintf('fill:%s;stroke-width:inherit', $fill);
                 return sprintf('<%s%s style="%s" />', $match[1], rtrim($match[2]), $style);
             },

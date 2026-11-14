@@ -7,6 +7,10 @@
 - Updated to [Tabler Icons 3.52.0](https://github.com/tabler/tabler-icons/releases/tag/v3.52.0), adding 259 icons and redrawing 2 others.
 - Tabler renamed `align-justified` to `align-left-justified`. Fields that already use `align-justified` keep working and switch to the new name the next time they're saved.
 
+### Fixed
+
+- Fixed outline icons rendering filled in Craft 6's native icon picker.
+
 ## 1.13.0 - 2026-11-11
 
 ### Added
